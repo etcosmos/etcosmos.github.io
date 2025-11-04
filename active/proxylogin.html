@@ -139,7 +139,7 @@ button {
       <label>Username</label>
       <input type="text" id="loginUser" placeholder="Enter your username">
     </div>
-    <div id="passwordBlock" style="display:none;">
+    <div>
       <label>Password</label>
       <input type="password" id="loginPass" placeholder="Enter your password">
     </div>
@@ -155,18 +155,15 @@ button {
 <script>
 const users = [
   { username: "ethan", password: "password" },
-  { username: "bobo0412", password: "himynameisxinyazhang" }
+  { username: "bobo0412", password: "himynameisxinyazhang" },
   { username: "lilac3cat", password: "372763" }
 ];
 
 const loginUser = document.getElementById('loginUser');
 const loginPass = document.getElementById('loginPass');
-const passwordBlock = document.getElementById('passwordBlock');
 const loginMsg = document.getElementById('loginMsg');
 const okBtn = document.getElementById('okBtn');
 const cancelBtn = document.getElementById('cancelBtn');
-
-let currentUser = null;
 
 function showMessage(msg, color="#e63946") {
   loginMsg.style.color = color;
@@ -192,35 +189,23 @@ async function sendLoginWebhook(username) {
 
 okBtn.onclick = () => {
   const username = loginUser.value.trim();
+  const password = loginPass.value;
 
-  if (!currentUser) {
-    const found = users.find(u => u.username === username);
-    if (!found) return showMessage("Username not found 😕");
-
-    currentUser = found;
-    loginUser.disabled = true;
-    passwordBlock.style.display = 'block';
-    loginPass.focus();
-    showMessage("Username recognized ✅", "#0b66ff");
+  const found = users.find(u => u.username === username && u.password === password);
+  if (!found) {
+    showMessage("Invalid username or password 😭");
   } else {
-    if (loginPass.value === currentUser.password) {
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('user', currentUser.username);
+    localStorage.setItem('loggedIn', 'true');
+    localStorage.setItem('user', found.username);
+    sendLoginWebhook(found.username);
 
-      // Send login event
-      sendLoginWebhook(currentUser.username);
-
-      document.getElementById('loginModal').classList.add('fadeOut');
-      setTimeout(() => window.location.href = "/active", 300);
-    } else {
-      showMessage("Incorrect password 😭");
-    }
+    document.getElementById('loginModal').classList.add('fadeOut');
+    setTimeout(() => window.location.href = "/active", 300);
   }
 };
 
 cancelBtn.onclick = () => window.location.reload();
 </script>
-
 
 </body>
 </html>
