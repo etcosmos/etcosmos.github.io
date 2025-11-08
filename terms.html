@@ -15,12 +15,16 @@
       --border:#e6e9ee;
       --maxw:1000px;
       --pad:28px;
-      --serif: "Georgia", "Times New Roman", serif;
-      --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --serif:"Georgia","Times New Roman",serif;
+      --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
     }
-    html,body{height:100%}
-    body{
+
+    html,body{
       margin:0;
+      padding:0;
+    }
+
+    body{
       background:var(--paper);
       color:var(--text);
       font-family:var(--sans);
@@ -30,7 +34,10 @@
       padding:36px 20px;
       display:flex;
       justify-content:center;
+      align-items:flex-start;
+      min-height:100vh;
     }
+
     .sheet{
       width:100%;
       max-width:var(--maxw);
@@ -38,8 +45,36 @@
       border:1px solid var(--border);
       border-radius:8px;
       padding:var(--pad);
-      box-shadow:0 6px 24px rgba(17,24,39,0.06);
+      box-shadow:
+        0 6px 24px rgba(17,24,39,0.06),
+        0 0 60px rgba(17,24,39,0.03) inset;
+      position:relative;
+      z-index:1;
     }
+
+    /* subtle fade effect on sides */
+    .sheet::before, .sheet::after {
+      content:"";
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:40px;
+      pointer-events:none;
+      z-index:2;
+    }
+    .sheet::before {
+      left:0;
+      background:linear-gradient(to right, rgba(251,251,251,1), rgba(251,251,251,0));
+      border-top-left-radius:8px;
+      border-bottom-left-radius:8px;
+    }
+    .sheet::after {
+      right:0;
+      background:linear-gradient(to left, rgba(251,251,251,1), rgba(251,251,251,0));
+      border-top-right-radius:8px;
+      border-bottom-right-radius:8px;
+    }
+
     header{
       display:flex;
       justify-content:space-between;
@@ -80,9 +115,7 @@
       cursor:pointer;
     }
     .btn:hover{background:rgba(11,95,255,0.04)}
-    main{
-      margin-top:8px;
-    }
+    main{margin-top:8px;}
     h1{font-family:var(--serif);font-size:28px;margin:0 0 6px 0}
     h2{font-family:var(--serif);font-size:18px;margin:28px 0 8px 0;color:var(--text)}
     h3{font-size:15px;margin:16px 0 6px 0;color:var(--text)}
@@ -133,7 +166,6 @@
       </div>
       <div class="controls" role="navigation" aria-label="Top controls">
         <a class="btn" href="/" title="Back to Home">← Back to Home</a>
-        <button class="btn" id="printBtn" onclick="window.print()" title="Print this page">Print</button>
       </div>
     </header>
     <main>
@@ -281,15 +313,15 @@
         <p><strong>Summary:</strong> By using this Site, you agree to these Terms, take responsibility for your actions, and accept that the Operator is not liable for misuse, school reports, or consequences. Content may be shared with proper credit. Contact <a href="mailto:ethantytang11@gmail.com">ethantytang11@gmail.com</a> for copyright matters.</p>
         <p>&copy; 2025 <strong>Ethan Tang</strong>. All rights reserved to the extent provided by law.</p>
       </footer>
+      <br><br>
     </main>
   </div>
-
+  <br><br>
   <button id="topBtn" aria-label="Back to top">↑ Top</button>
 
   <script>
     const topBtn = document.getElementById('topBtn');
     topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-    document.getElementById('printBtn').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') e.target.click(); });
   </script>
 </body>
 </html>
