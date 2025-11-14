@@ -409,3 +409,82 @@ body.dark .cards-grid .card .gfiles-button:hover {
     grid-template-columns: 1fr;
   }
 }
+/* === SECRET POPUP === */
+
+.secret-popup {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99999;
+  backdrop-filter: blur(4px);
+}
+
+.secret-popup.show {
+  display: grid;
+}
+
+.secret-content {
+  background: #1c1c1c;
+  color: #fff;
+  padding: 25px 30px;
+  border-radius: 16px;
+  width: 320px;
+  text-align: center;
+  animation: popIn 0.25s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.secret-content h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.secret-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.secret-content li {
+  margin: 10px 0;
+}
+
+.secret-content a {
+  text-decoration: none;
+  color: #4da7ff;
+  font-size: 17px;
+  transition: opacity 0.2s;
+}
+
+.secret-content a:hover {
+  opacity: 0.7;
+}
+
+#secret-close {
+  padding: 8px 16px;
+  border: none;
+  background: #444;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.25s;
+}
+
+#secret-close:hover {
+  background: #666;
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
