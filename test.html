@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background: #0a0a0f;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 70px;
+            background: linear-gradient(180deg, #0f0f1e 0%, #1a1a2e 50%, #0f0f1e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 0;
+            position: relative;
+            z-index: 100;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(102, 126, 234, 0.03), transparent 70%);
+            pointer-events: none;
+        }
+
+        .sidebar:hover {
+            width: 260px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            position: relative;
+            width: 100%;
+            padding: 0 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            white-space: nowrap;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar:hover .logo-text {
+            opacity: 1;
+        }
+
+        .nav-items {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 12px;
+            color: #8b8b9f;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            text-decoration: none;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #e0e0ff;
+            transform: translateX(2px);
+        }
+
+        .nav-item:hover::before {
+            opacity: 1;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .nav-item.active::before {
+            opacity: 1;
+        }
+
+        .nav-icon {
+            min-width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-text {
+            margin-left: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: #5a5a6f;
+            opacity: 0;
+            white-space: nowrap;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .sidebar:hover .footer-text {
+            opacity: 1;
+        }
+
+        .footer-icon {
+            font-size: 16px;
+            opacity: 0.6;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0f;
+        }
+
+        .content-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #ffffff;
+            border-radius: 0;
+        }
+
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .loading-screen.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(102, 126, 234, 0.1);
+            border-top-color: #667eea;
+            border-right-color: #764ba2;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* External Link Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(102, 126, 234, 0.3);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .modal-header {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .modal-body {
+            color: #b0b0c0;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .modal-url {
+            color: #667eea;
+            word-break: break-all;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.3px;
+        }
+
+        .modal-button.cancel {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e0e0ff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-button.cancel:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .modal-button.confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .modal-button.confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-button:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar:hover {
+                width: 70px;
+            }
+
+            .nav-text,
+            .logo-text {
+                display: none;
+            }
+
+            .modal {
+                padding: 30px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5ZFIfqVyE6oK3CMHICNEqX7Mavz7C9cyTpw&s" alt="Cosmos Logo">
+                    </div>
+                    <div class="logo-text">COSMOS</div>
+                </div>
+            </div>
+
+            <div class="nav-items">
+                <a class="nav-item active" data-url="https://example.com" data-domain="example.com">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-text">Home</span>
+                </a>
+                <a class="nav-item" data-url="https://en.wikipedia.org/wiki/Prism" data-domain="wikipedia.org">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a class="nav-item" data-url="https://www.google.com" data-domain="google.com">
+                    <span class="nav-icon">🔍</span>
+                    <span class="nav-text">Search</span>
+                </a>
+                <a class="nav-item" data-url="https://github.com" data-domain="github.com">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-text">Projects</span>
+                </a>
+                <a class="nav-item" data-url="https://www.youtube.com" data-domain="youtube.com">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <span class="footer-icon">✨</span>
+                <span class="footer-text"> by ethan</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="loading-screen">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading...</div>
+            </div>
+            <iframe id="contentFrame" class="content-frame" src="https://example.com"></iframe>
+        </div>
+    </div>
+
+    <!-- External Link Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-icon">⚠️</div>
+            <div class="modal-header">External Link Detected</div>
+            <div class="modal-body">
+                You're about to navigate to an external site that's not part of the designated domain:
+                <div class="modal-url" id="modalUrl"></div>
+                Would you like to open this link in a new tab?
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" id="modalCancel">Cancel</button>
+                <button class="modal-button confirm" id="modalConfirm">Open in New Tab</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const navItems = document.querySelectorAll('.nav-item');
+        const contentFrame = document.getElementById('contentFrame');
+        const loadingScreen = document.querySelector('.loading-screen');
+        const sidebar = document.querySelector('.sidebar');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalUrl = document.getElementById('modalUrl');
+        const modalCancel = document.getElementById('modalCancel');
+        const modalConfirm = document.getElementById('modalConfirm');
+
+        let currentAllowedDomain = 'example.com';
+        let pendingExternalUrl = '';
+
+        // Function to extract domain from URL
+        function getDomain(url) {
+            try {
+                const urlObj = new URL(url);
+                return urlObj.hostname.replace('www.', '');
+            } catch (e) {
+                return '';
+            }
+        }
+
+        // Function to check if URL is within allowed domain
+        function isAllowedDomain(url, allowedDomain) {
+            const domain = getDomain(url);
+            return domain.includes(allowedDomain) || domain === allowedDomain;
+        }
+
+        // Monitor iframe for navigation attempts
+        function monitorIframe() {
+            try {
+                // Try to access iframe location (will throw error for cross-origin)
+                const iframeUrl = contentFrame.contentWindow.location.href;
+                
+                if (!isAllowedDomain(iframeUrl, currentAllowedDomain)) {
+                    // External link detected
+                    contentFrame.contentWindow.stop();
+                    pendingExternalUrl = iframeUrl;
+                    modalUrl.textContent = iframeUrl;
+                    modalOverlay.classList.add('active');
+                    
+                    // Go back to previous page
+                    contentFrame.contentWindow.history.back();
+                }
+            } catch (e) {
+                // Cross-origin error - iframe is on different domain
+                // This is expected for external sites
+            }
+        }
+
+        // Handle navigation clicks
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const url = item.getAttribute('data-url');
+                const domain = item.getAttribute('data-domain');
+                
+                // Update allowed domain
+                currentAllowedDomain = domain;
+                
+                // Update active state
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Show loading screen
+                loadingScreen.classList.add('active');
+                
+                // Add iframe-active class to sidebar
+                sidebar.classList.add('iframe-active');
+                
+                // Load new page in iframe
+                contentFrame.src = url;
+            });
+        });
+
+        // Hide loading screen when iframe loads
+        contentFrame.addEventListener('load', () => {
+            loadingScreen.classList.remove('active');
+            monitorIframe();
+        });
+
+        // Modal handlers
+        modalCancel.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+            pendingExternalUrl = '';
+        });
+
+        modalConfirm.addEventListener('click', () => {
+            if (pendingExternalUrl) {
+                window.open(pendingExternalUrl, '_blank');
+            }
+            modalOverlay.classList.remove('active');
+            pendingExternalUrl = '';
+        });
+
+        // Close modal on overlay click
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+                pendingExternalUrl = '';
+            }
+        });
+
+        // Periodic check for iframe navigation (backup method)
+        setInterval(monitorIframe, 1000);
+
+        // Initial load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loadingScreen.classList.remove('active');
+                sidebar.classList.add('iframe-active');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
