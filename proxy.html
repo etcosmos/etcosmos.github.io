@@ -743,7 +743,7 @@ function createTab(url) {
   const proxyUrl = workerBase + encodeURIComponent(url);
   iframe.src = proxyUrl;
   iframe.className = 'active';
-  iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation');
+  iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation allow-downloads');
   
   console.log('Creating tab for:', url);
   console.log('Proxy URL:', proxyUrl);
