@@ -1,0 +1,926 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Jamal's Game Hub
+  </title>
+  <link href="https://iili.io/fHrIxvj.png" rel="icon" type="image/png"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="css/css2" rel="stylesheet"/>
+  <link href="css/all.min.css" rel="stylesheet"/>
+  <style>
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+:root {
+    --background: hsl(260, 40%, 8%);
+    --foreground: hsl(300, 20%, 95%);
+    --muted-foreground: hsl(300, 10%, 60%);
+    --accent: hsl(315, 80%, 70%);
+    --primary: hsl(330, 100%, 60%);
+    --font-mono: 'Orbitron', 'Menlo', monospace;
+    --font-sans: 'Rajdhani', 'Open Sans', sans-serif;
+}
+body {
+    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    padding: calc(56px + 2rem) 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+.starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s infinite;
+}
+.star:nth-child(odd) {animation-delay: 1.5s;}
+.star:nth-child(3n) {animation-delay: 0.5s;}
+@keyframes twinkle {
+    0%,100% {opacity: 0.3; transform: scale(0.8);}
+    50% {opacity: 1; transform: scale(1.2);}
+}
+
+.stopwatch-container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 60rem;
+}
+.stopwatch-card {
+    background-color: var(--background);
+    background-image: linear-gradient(45deg, rgba(255, 0, 128, 0.1), rgba(128, 0, 255, 0.1));
+    border: 2px solid rgba(255, 0, 128, 0.3);
+    border-radius: 12px;
+    padding: 2.5rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.3), inset 0 0 10px rgba(255, 0, 128, 0.2);
+    transition: all 0.3s ease-in-out;
+}
+
+.timer-display {
+    font-family: var(--font-mono);
+    font-size: clamp(3.5rem, 13vw, 7.5rem);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2.5rem;
+    text-shadow: 0 0 8px rgba(255, 0, 128, 0.7);
+    transition: text-shadow 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+.time-segment {
+    display: inline-block;
+    width: 2.5ch;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+.separator {
+    display: inline-block;
+    padding: 0 0.2ch;
+}
+.timer-display.finished {
+    animation: pulse 0.5s 3;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); text-shadow: 0 0 8px rgba(255, 0, 128, 0.7); }
+    50% { transform: scale(1.05); text-shadow: 0 0 20px #ff0080;}
+}
+
+.controls {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.control-btn {
+    font-family: var(--font-sans);
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--foreground);
+    background-color: var(--background);
+    background-image: linear-gradient(rgba(255, 0, 128, 0.15), rgba(255, 0, 128, 0.15));
+    border: 2px solid rgba(255, 0, 128, 0.4);
+    border-radius: 8px;
+    padding: 0.8rem 1.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.control-btn:hover {
+    background-color: var(--background);
+    background-image: linear-gradient(rgba(255, 0, 128, 0.3), rgba(255, 0, 128, 0.3));
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
+}
+#startStopBtn.running {
+    background-color: var(--background);
+    background-image: linear-gradient(rgba(255, 0, 128, 0.3), rgba(255, 0, 128, 0.3));
+    border-color: var(--primary);
+}
+
+.settings-panel {
+    width: 100%;
+    border-top: 1px solid rgba(255, 0, 128, 0.3);
+    padding-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+}
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+.toggle-switch input { display: none; }
+.slider {
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--background);
+    background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3));
+    transition: .4s;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 0, 128, 0.4);
+}
+.slider:before {
+    position: absolute; content: "";
+    height: 20px; width: 20px;
+    left: 4px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: var(--primary);
+    background-image: none;
+    box-shadow: 0 0 10px var(--primary);
+}
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+#countdown-input-container { display: none; }
+#countdown-input {
+    font-family: var(--font-mono); width: 100%;
+    background-color: var(--background);
+    background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3));
+    border: 1px solid rgba(255, 0, 128, 0.4);
+    color: var(--foreground); font-size: 1.2rem;
+    text-align: center; padding: 0.5rem; border-radius: 5px;
+    outline: none; transition: border-color 0.3s;
+}
+#countdown-input:focus { border-color: var(--accent); }
+
+@media (max-width: 600px) {
+    .stopwatch-card { padding: 1.5rem; }
+    .controls { gap: 1rem; }
+    .control-btn { padding: 0.6rem 1.2rem; }
+}
+  </style>
+ </head>
+ <body>
+  <!-- =================== START OF MENU BAR THINGY =================== -->
+  <style>
+   .main-nav {font-family: var(--font-sans);background-color: rgba(15, 12, 25, 0.85);backdrop-filter: blur(10px);border-bottom: 2px solid rgba(255, 0, 128, 0.3);box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);width: 100%;position: fixed;top: -80px; left: 0;z-index: 1000;transition: top 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);padding: 0.5rem 0;}
+    .main-nav.visible {top: 0; }
+    .nav-content {display: flex;align-items: center;padding: 0 -2.5rem;max-width: 1200px;margin: 0 auto;white-space: nowrap;}
+
+    .nav-logo-title {display: flex;align-items: center;gap: 1rem;text-decoration: none;}
+    .nav-logo-title img { height: 40px;}
+    .nav-logo-title .site-title {font-family: var(--font-mono);font-size: 1.5rem;font-weight: 700;color: var(--foreground);text-shadow: 0 0 8px var(--primary);}
+
+    .nav-links {list-style: none;margin: 0;padding: 0;display: flex;gap: 0.5rem;margin-left: auto; }
+    .nav-links li { position: relative; }
+    .nav-links a {display: flex; align-items: center; color: var(--muted-foreground);text-decoration: none;padding: 0.8rem 1rem;font-size: 1rem;font-weight: 600;border-radius: 8px;transition: all 0.3s ease;}
+    .nav-links a:hover,.nav-links a.active {color: var(--foreground);background-color: rgba(255, 0, 128, 0.1);text-shadow: 0 0 5px var(--primary);}
+
+    .nav-links a i:not(.fa-caret-down) { margin-right: 8px; }
+    .nav-links a i.fa-caret-down { margin-left: 0.3rem; }
+
+    .dropdown-content {display: none;position: absolute;top: 100%;left: 0;background-color: rgba(25, 22, 40, 0.95);border: 1px solid rgba(255, 0, 128, 0.3);border-radius: 0 0 8px 8px;min-width: 200px;box-shadow: 0 8px 16px rgba(0,0,0,0.3);z-index: 1;padding: 0.5rem 0;overflow: hidden;}
+    .dropdown:hover .dropdown-content { display: block; }
+    .dropdown-content a {width: 100%;text-align: left;border-radius: 0;padding: 0.8rem 1.5rem;box-sizing: border-box;}
+
+    .nav-toggle-btn {position: fixed;top: 1rem;right: 2rem;z-index: 1001;background: rgba(15, 12, 25, 0.85);border: 2px solid var(--muted-foreground);color: var(--muted-foreground);border-radius: 8px;width: 40px;height: 40px;cursor: pointer;font-size: 1.2rem;transition: all 0.3s ease;}
+    .nav-toggle-btn:hover {border-color: var(--primary);color: var(--primary);box-shadow: 0 0 10px var(--primary);}
+    .nav-toggle-btn .arrow-up { display: none; }
+    .nav-toggle-btn.active .arrow-up { display: inline; }
+    .nav-toggle-btn.active .arrow-down { display: none; }
+  </style>
+  <nav class="main-nav visible" id="mainNav">
+   <div class="nav-content">
+    <a class="nav-logo-title" href="index.html">
+     <img alt="Site Logo" src="images/fHrIxvj.png"/>
+     <span class="site-title">
+      Jamal's Game Hub
+     </span>
+    </a>
+    <ul class="nav-links">
+     <li>
+      <a href="index.html">
+       <i class="fas fa-home">
+       </i>
+       Home
+      </a>
+     </li>
+     <li>
+      <a href="media.html">
+       <i class="fas fa-tv">
+       </i>
+       Media
+      </a>
+     </li>
+     <li>
+      <a href="vortex.html">
+       <i class="fas fa-comment-dots">
+       </i>
+       Vortex
+      </a>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-rocket">
+       </i>
+       Proxies
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="proxyinfo.html">
+        Proxies Info
+       </a>
+       <a href="proxies.html">
+        Proxies
+       </a>
+       <a href="proxydrop.html">
+        Proxy Link Drops
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-gamepad">
+       </i>
+       Game Sites
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="gamesites.html">
+        Game Sites
+       </a>
+       <a href="gamesiteslinkdrop.html">
+        Game Site Link Drops
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-tools">
+       </i>
+       Tools
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="durlgen.html">
+        Data URL Gen
+       </a>
+       <a href="abtblnk.html">
+        About:blank tab opener
+       </a>
+       <a href="viewer.html">
+        HTML viewer
+       </a>
+       <a href="translate.html">
+        Translator
+       </a>
+       <a href="unitconverter.html">
+        Unit Converter
+       </a>
+       <a href="stopwatch.html">
+        Stopwatch
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-info-circle">
+       </i>
+       Important
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="staff.html">
+        Staff
+       </a>
+       <a href="updatelog.html">
+        Update Log
+       </a>
+       <a href="partners.html">
+        Partners
+       </a>
+       <a href="credits.html">
+        Credits
+       </a>
+       <a href="contact.html">
+        Contact Form
+       </a>
+      </div>
+     </li>
+    </ul>
+   </div>
+  </nav>
+  <button class="nav-toggle-btn active" id="navToggle">
+   <i class="fas fa-chevron-down arrow-down">
+   </i>
+   <i class="fas fa-chevron-up arrow-up">
+   </i>
+  </button>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+        if (window.navMenuLoaded) return;
+        window.navMenuLoaded = true;
+
+        const mainNav = document.getElementById('mainNav');
+        const navToggle = document.getElementById('navToggle');
+
+        function toggleMenu() {
+            mainNav.classList.toggle('visible');
+            navToggle.classList.toggle('active');
+        }
+
+        navToggle.addEventListener('click', toggleMenu);
+
+        setTimeout(() => {
+            mainNav.classList.add('visible');
+            navToggle.classList.add('active');
+        }, 100);
+    });
+  </script>
+  <!-- ===========================END OF MENU BAR THINGY=======================-->
+  <div class="starfield" id="starfield">
+   <div class="star" style="left: 42.4292%; top: 7.74687%; width: 3.28777px; height: 3.28777px; animation-delay: 1.09722s;">
+   </div>
+   <div class="star" style="left: 8.16005%; top: 58.7227%; width: 3.89262px; height: 3.89262px; animation-delay: 1.6269s;">
+   </div>
+   <div class="star" style="left: 44.4932%; top: 95.5337%; width: 1.03427px; height: 1.03427px; animation-delay: 1.58427s;">
+   </div>
+   <div class="star" style="left: 82.9685%; top: 64.6428%; width: 3.43647px; height: 3.43647px; animation-delay: 2.39121s;">
+   </div>
+   <div class="star" style="left: 87.0456%; top: 23.5843%; width: 3.67924px; height: 3.67924px; animation-delay: 1.11325s;">
+   </div>
+   <div class="star" style="left: 3.54637%; top: 25.9216%; width: 2.27678px; height: 2.27678px; animation-delay: 1.50502s;">
+   </div>
+   <div class="star" style="left: 73.7945%; top: 2.05091%; width: 1.37438px; height: 1.37438px; animation-delay: 2.11389s;">
+   </div>
+   <div class="star" style="left: 21.7821%; top: 59.0938%; width: 3.76646px; height: 3.76646px; animation-delay: 2.56127s;">
+   </div>
+   <div class="star" style="left: 55.7792%; top: 98.7468%; width: 2.49028px; height: 2.49028px; animation-delay: 2.6889s;">
+   </div>
+   <div class="star" style="left: 39.0951%; top: 26.3572%; width: 3.78143px; height: 3.78143px; animation-delay: 2.71149s;">
+   </div>
+   <div class="star" style="left: 64.3219%; top: 51.9801%; width: 3.72423px; height: 3.72423px; animation-delay: 0.407557s;">
+   </div>
+   <div class="star" style="left: 83.2214%; top: 23.8324%; width: 2.53281px; height: 2.53281px; animation-delay: 1.97571s;">
+   </div>
+   <div class="star" style="left: 33.9114%; top: 44.4593%; width: 3.8332px; height: 3.8332px; animation-delay: 0.320801s;">
+   </div>
+   <div class="star" style="left: 84.5306%; top: 67.6514%; width: 3.30848px; height: 3.30848px; animation-delay: 0.767384s;">
+   </div>
+   <div class="star" style="left: 42.2838%; top: 27.0631%; width: 3.72725px; height: 3.72725px; animation-delay: 0.617205s;">
+   </div>
+   <div class="star" style="left: 61.984%; top: 27.3471%; width: 2.72875px; height: 2.72875px; animation-delay: 0.471023s;">
+   </div>
+   <div class="star" style="left: 87.4219%; top: 50.9805%; width: 2.34505px; height: 2.34505px; animation-delay: 0.064829s;">
+   </div>
+   <div class="star" style="left: 47.0539%; top: 71.6949%; width: 2.0472px; height: 2.0472px; animation-delay: 1.94303s;">
+   </div>
+   <div class="star" style="left: 79.6296%; top: 32.7555%; width: 1.48992px; height: 1.48992px; animation-delay: 0.899276s;">
+   </div>
+   <div class="star" style="left: 42.83%; top: 47.3596%; width: 3.78177px; height: 3.78177px; animation-delay: 2.31968s;">
+   </div>
+   <div class="star" style="left: 48.9674%; top: 41.0817%; width: 3.81302px; height: 3.81302px; animation-delay: 1.86958s;">
+   </div>
+   <div class="star" style="left: 92.5582%; top: 8.49877%; width: 1.05403px; height: 1.05403px; animation-delay: 0.149028s;">
+   </div>
+   <div class="star" style="left: 30.6471%; top: 86.4762%; width: 1.30905px; height: 1.30905px; animation-delay: 2.13206s;">
+   </div>
+   <div class="star" style="left: 27.7052%; top: 73.2944%; width: 1.86622px; height: 1.86622px; animation-delay: 0.518424s;">
+   </div>
+   <div class="star" style="left: 40.4437%; top: 88.4396%; width: 1.13492px; height: 1.13492px; animation-delay: 0.902996s;">
+   </div>
+   <div class="star" style="left: 71.8619%; top: 47.9912%; width: 1.52406px; height: 1.52406px; animation-delay: 1.29049s;">
+   </div>
+   <div class="star" style="left: 56.3349%; top: 91.153%; width: 1.29328px; height: 1.29328px; animation-delay: 0.32763s;">
+   </div>
+   <div class="star" style="left: 58.8496%; top: 15.9214%; width: 1.56292px; height: 1.56292px; animation-delay: 2.67893s;">
+   </div>
+   <div class="star" style="left: 99.7702%; top: 30.2186%; width: 3.04542px; height: 3.04542px; animation-delay: 0.627973s;">
+   </div>
+   <div class="star" style="left: 55.8978%; top: 56.2751%; width: 1.41963px; height: 1.41963px; animation-delay: 1.85141s;">
+   </div>
+   <div class="star" style="left: 48.417%; top: 10.9241%; width: 2.47731px; height: 2.47731px; animation-delay: 2.09034s;">
+   </div>
+   <div class="star" style="left: 90.2893%; top: 14.8049%; width: 2.76891px; height: 2.76891px; animation-delay: 2.69887s;">
+   </div>
+   <div class="star" style="left: 28.5889%; top: 80.9597%; width: 1.57934px; height: 1.57934px; animation-delay: 2.60208s;">
+   </div>
+   <div class="star" style="left: 46.4133%; top: 45.9951%; width: 2.16835px; height: 2.16835px; animation-delay: 0.144958s;">
+   </div>
+   <div class="star" style="left: 57.2475%; top: 84.746%; width: 1.29104px; height: 1.29104px; animation-delay: 0.597705s;">
+   </div>
+   <div class="star" style="left: 57.6554%; top: 67.2549%; width: 2.21859px; height: 2.21859px; animation-delay: 0.448759s;">
+   </div>
+   <div class="star" style="left: 29.8741%; top: 73.2134%; width: 2.59985px; height: 2.59985px; animation-delay: 1.28522s;">
+   </div>
+   <div class="star" style="left: 84.1774%; top: 98.4643%; width: 2.01307px; height: 2.01307px; animation-delay: 2.08091s;">
+   </div>
+   <div class="star" style="left: 79.8603%; top: 81.633%; width: 3.45088px; height: 3.45088px; animation-delay: 2.46928s;">
+   </div>
+   <div class="star" style="left: 6.35024%; top: 37.8859%; width: 1.37474px; height: 1.37474px; animation-delay: 1.41619s;">
+   </div>
+   <div class="star" style="left: 28.5266%; top: 74.0715%; width: 2.75101px; height: 2.75101px; animation-delay: 1.93127s;">
+   </div>
+   <div class="star" style="left: 9.49698%; top: 31.351%; width: 3.59966px; height: 3.59966px; animation-delay: 1.91965s;">
+   </div>
+   <div class="star" style="left: 80.0224%; top: 29.0797%; width: 2.06388px; height: 2.06388px; animation-delay: 0.341122s;">
+   </div>
+   <div class="star" style="left: 21.0942%; top: 90.8882%; width: 3.09938px; height: 3.09938px; animation-delay: 1.35725s;">
+   </div>
+   <div class="star" style="left: 40.5102%; top: 21.627%; width: 3.17924px; height: 3.17924px; animation-delay: 2.20636s;">
+   </div>
+   <div class="star" style="left: 52.9521%; top: 84.2856%; width: 2.43882px; height: 2.43882px; animation-delay: 0.169682s;">
+   </div>
+   <div class="star" style="left: 47.2217%; top: 25.9694%; width: 3.71899px; height: 3.71899px; animation-delay: 2.9249s;">
+   </div>
+   <div class="star" style="left: 75.3783%; top: 19.3534%; width: 3.8177px; height: 3.8177px; animation-delay: 1.71095s;">
+   </div>
+   <div class="star" style="left: 40.8253%; top: 40.8698%; width: 3.16707px; height: 3.16707px; animation-delay: 0.817742s;">
+   </div>
+   <div class="star" style="left: 93.9335%; top: 96.4539%; width: 1.75397px; height: 1.75397px; animation-delay: 0.137241s;">
+   </div>
+   <div class="star" style="left: 32.1418%; top: 94.1706%; width: 2.65051px; height: 2.65051px; animation-delay: 1.98968s;">
+   </div>
+   <div class="star" style="left: 19.193%; top: 99.7887%; width: 3.87758px; height: 3.87758px; animation-delay: 0.203389s;">
+   </div>
+   <div class="star" style="left: 67.1248%; top: 38.4466%; width: 2.16042px; height: 2.16042px; animation-delay: 0.777883s;">
+   </div>
+   <div class="star" style="left: 47.7058%; top: 89.4715%; width: 1.06216px; height: 1.06216px; animation-delay: 0.981508s;">
+   </div>
+   <div class="star" style="left: 12.051%; top: 12.0217%; width: 1.19466px; height: 1.19466px; animation-delay: 1.58342s;">
+   </div>
+   <div class="star" style="left: 95.109%; top: 34.9984%; width: 3.12952px; height: 3.12952px; animation-delay: 2.87331s;">
+   </div>
+   <div class="star" style="left: 28.8674%; top: 29.9621%; width: 3.63574px; height: 3.63574px; animation-delay: 2.85793s;">
+   </div>
+   <div class="star" style="left: 68.3961%; top: 55.0639%; width: 1.26378px; height: 1.26378px; animation-delay: 0.882454s;">
+   </div>
+   <div class="star" style="left: 62.2598%; top: 83.7277%; width: 3.20246px; height: 3.20246px; animation-delay: 1.57581s;">
+   </div>
+   <div class="star" style="left: 72.2082%; top: 16.4721%; width: 3.70738px; height: 3.70738px; animation-delay: 0.428914s;">
+   </div>
+   <div class="star" style="left: 71.6022%; top: 12.432%; width: 3.51434px; height: 3.51434px; animation-delay: 1.16111s;">
+   </div>
+   <div class="star" style="left: 1.9516%; top: 15.0445%; width: 1.9227px; height: 1.9227px; animation-delay: 1.9491s;">
+   </div>
+   <div class="star" style="left: 77.3706%; top: 28.6543%; width: 1.61414px; height: 1.61414px; animation-delay: 0.245454s;">
+   </div>
+   <div class="star" style="left: 82.6848%; top: 46.959%; width: 1.22814px; height: 1.22814px; animation-delay: 2.72168s;">
+   </div>
+   <div class="star" style="left: 77.1207%; top: 64.1338%; width: 1.39793px; height: 1.39793px; animation-delay: 1.2066s;">
+   </div>
+   <div class="star" style="left: 76.2091%; top: 49.3205%; width: 1.38622px; height: 1.38622px; animation-delay: 2.55075s;">
+   </div>
+   <div class="star" style="left: 26.5928%; top: 90.4022%; width: 1.75557px; height: 1.75557px; animation-delay: 0.825379s;">
+   </div>
+   <div class="star" style="left: 73.3767%; top: 21.6336%; width: 3.84648px; height: 3.84648px; animation-delay: 1.17605s;">
+   </div>
+   <div class="star" style="left: 13.1511%; top: 24.2351%; width: 1.07591px; height: 1.07591px; animation-delay: 2.1569s;">
+   </div>
+   <div class="star" style="left: 70.8946%; top: 14.8496%; width: 1.19036px; height: 1.19036px; animation-delay: 1.57481s;">
+   </div>
+   <div class="star" style="left: 17.628%; top: 8.01778%; width: 2.9499px; height: 2.9499px; animation-delay: 2.27197s;">
+   </div>
+   <div class="star" style="left: 45.0028%; top: 5.45619%; width: 3.88119px; height: 3.88119px; animation-delay: 0.109333s;">
+   </div>
+   <div class="star" style="left: 75.0238%; top: 62.0304%; width: 1.83247px; height: 1.83247px; animation-delay: 2.93246s;">
+   </div>
+   <div class="star" style="left: 86.4352%; top: 94.9967%; width: 2.46507px; height: 2.46507px; animation-delay: 2.49756s;">
+   </div>
+   <div class="star" style="left: 60.0401%; top: 18.2878%; width: 1.50199px; height: 1.50199px; animation-delay: 0.695751s;">
+   </div>
+   <div class="star" style="left: 28.3091%; top: 16.7435%; width: 3.73562px; height: 3.73562px; animation-delay: 0.945901s;">
+   </div>
+   <div class="star" style="left: 85.7993%; top: 21.2101%; width: 1.0464px; height: 1.0464px; animation-delay: 0.284935s;">
+   </div>
+   <div class="star" style="left: 14.1504%; top: 36.5543%; width: 2.09886px; height: 2.09886px; animation-delay: 0.164437s;">
+   </div>
+   <div class="star" style="left: 9.24236%; top: 96.9899%; width: 1.55816px; height: 1.55816px; animation-delay: 2.30348s;">
+   </div>
+   <div class="star" style="left: 48.7481%; top: 82.3048%; width: 1.81161px; height: 1.81161px; animation-delay: 1.98279s;">
+   </div>
+   <div class="star" style="left: 79.8945%; top: 87.379%; width: 1.81904px; height: 1.81904px; animation-delay: 2.0956s;">
+   </div>
+   <div class="star" style="left: 39.1639%; top: 72.2305%; width: 1.57024px; height: 1.57024px; animation-delay: 1.67845s;">
+   </div>
+   <div class="star" style="left: 70.7561%; top: 58.6335%; width: 2.49056px; height: 2.49056px; animation-delay: 2.33011s;">
+   </div>
+   <div class="star" style="left: 34.8265%; top: 20.222%; width: 1.72506px; height: 1.72506px; animation-delay: 1.07246s;">
+   </div>
+   <div class="star" style="left: 37.4434%; top: 5.88117%; width: 2.67512px; height: 2.67512px; animation-delay: 0.193171s;">
+   </div>
+   <div class="star" style="left: 34.5211%; top: 18.8191%; width: 3.57599px; height: 3.57599px; animation-delay: 1.04164s;">
+   </div>
+   <div class="star" style="left: 92.9598%; top: 35.6839%; width: 2.59913px; height: 2.59913px; animation-delay: 0.555376s;">
+   </div>
+   <div class="star" style="left: 58.6821%; top: 90.4265%; width: 3.69675px; height: 3.69675px; animation-delay: 0.323731s;">
+   </div>
+   <div class="star" style="left: 46.7037%; top: 54.7605%; width: 1.44788px; height: 1.44788px; animation-delay: 0.666096s;">
+   </div>
+   <div class="star" style="left: 99.8578%; top: 7.05143%; width: 1.66676px; height: 1.66676px; animation-delay: 0.39472s;">
+   </div>
+   <div class="star" style="left: 33.2656%; top: 26.4595%; width: 1.68147px; height: 1.68147px; animation-delay: 1.86699s;">
+   </div>
+   <div class="star" style="left: 51.7251%; top: 56.394%; width: 1.26795px; height: 1.26795px; animation-delay: 0.879787s;">
+   </div>
+   <div class="star" style="left: 12.7413%; top: 73.2149%; width: 2.41662px; height: 2.41662px; animation-delay: 2.49211s;">
+   </div>
+   <div class="star" style="left: 65.8861%; top: 87.4797%; width: 3.50478px; height: 3.50478px; animation-delay: 2.6605s;">
+   </div>
+   <div class="star" style="left: 66.6923%; top: 10.7787%; width: 1.37427px; height: 1.37427px; animation-delay: 0.740876s;">
+   </div>
+   <div class="star" style="left: 50.4401%; top: 21.5233%; width: 2.80484px; height: 2.80484px; animation-delay: 0.821293s;">
+   </div>
+   <div class="star" style="left: 86.6798%; top: 55.0572%; width: 1.11579px; height: 1.11579px; animation-delay: 0.154293s;">
+   </div>
+   <div class="star" style="left: 68.2701%; top: 5.91013%; width: 1.90154px; height: 1.90154px; animation-delay: 2.81785s;">
+   </div>
+   <div class="star" style="left: 58.4028%; top: 46.1545%; width: 2.13594px; height: 2.13594px; animation-delay: 0.781663s;">
+   </div>
+   <div class="star" style="left: 66.0626%; top: 20.4247%; width: 1.83059px; height: 1.83059px; animation-delay: 2.08954s;">
+   </div>
+   <div class="star" style="left: 86.5076%; top: 28.7593%; width: 2.29265px; height: 2.29265px; animation-delay: 2.80526s;">
+   </div>
+   <div class="star" style="left: 8.11008%; top: 85.5096%; width: 2.04359px; height: 2.04359px; animation-delay: 1.96489s;">
+   </div>
+   <div class="star" style="left: 52.0514%; top: 81.9198%; width: 2.85822px; height: 2.85822px; animation-delay: 0.269797s;">
+   </div>
+   <div class="star" style="left: 18.1958%; top: 21.7725%; width: 3.71978px; height: 3.71978px; animation-delay: 1.25738s;">
+   </div>
+   <div class="star" style="left: 61.7185%; top: 2.77444%; width: 1.2059px; height: 1.2059px; animation-delay: 2.945s;">
+   </div>
+   <div class="star" style="left: 64.2072%; top: 65.7896%; width: 1.689px; height: 1.689px; animation-delay: 0.95183s;">
+   </div>
+   <div class="star" style="left: 24.8225%; top: 93.5661%; width: 2.18597px; height: 2.18597px; animation-delay: 2.3996s;">
+   </div>
+   <div class="star" style="left: 45.5421%; top: 96.9782%; width: 1.36994px; height: 1.36994px; animation-delay: 1.01954s;">
+   </div>
+   <div class="star" style="left: 66.2565%; top: 85.1862%; width: 2.38075px; height: 2.38075px; animation-delay: 0.427947s;">
+   </div>
+   <div class="star" style="left: 57.9876%; top: 99.7826%; width: 2.92558px; height: 2.92558px; animation-delay: 2.34394s;">
+   </div>
+   <div class="star" style="left: 79.5482%; top: 53.368%; width: 2.00743px; height: 2.00743px; animation-delay: 0.0855324s;">
+   </div>
+   <div class="star" style="left: 76.615%; top: 20.581%; width: 3.75031px; height: 3.75031px; animation-delay: 0.445412s;">
+   </div>
+   <div class="star" style="left: 2.69562%; top: 2.16604%; width: 1.60506px; height: 1.60506px; animation-delay: 2.36196s;">
+   </div>
+   <div class="star" style="left: 14.8458%; top: 86.9582%; width: 1.34564px; height: 1.34564px; animation-delay: 0.439326s;">
+   </div>
+   <div class="star" style="left: 57.2321%; top: 73.4128%; width: 2.84466px; height: 2.84466px; animation-delay: 2.7204s;">
+   </div>
+   <div class="star" style="left: 35.6447%; top: 56.0656%; width: 2.9663px; height: 2.9663px; animation-delay: 2.24361s;">
+   </div>
+   <div class="star" style="left: 19.1972%; top: 49.792%; width: 3.33023px; height: 3.33023px; animation-delay: 2.95622s;">
+   </div>
+   <div class="star" style="left: 28.6108%; top: 19.8726%; width: 2.63904px; height: 2.63904px; animation-delay: 2.40476s;">
+   </div>
+   <div class="star" style="left: 45.8908%; top: 77.8591%; width: 1.68576px; height: 1.68576px; animation-delay: 1.73541s;">
+   </div>
+   <div class="star" style="left: 82.3328%; top: 46.0394%; width: 2.92659px; height: 2.92659px; animation-delay: 1.81183s;">
+   </div>
+   <div class="star" style="left: 27.0158%; top: 72.3462%; width: 1.64643px; height: 1.64643px; animation-delay: 0.466091s;">
+   </div>
+   <div class="star" style="left: 20.7717%; top: 26.7878%; width: 3.01682px; height: 3.01682px; animation-delay: 2.36061s;">
+   </div>
+   <div class="star" style="left: 20.2495%; top: 35.2363%; width: 3.20922px; height: 3.20922px; animation-delay: 2.81355s;">
+   </div>
+   <div class="star" style="left: 20.1794%; top: 18.6112%; width: 1.65076px; height: 1.65076px; animation-delay: 2.80423s;">
+   </div>
+   <div class="star" style="left: 89.3103%; top: 14.9959%; width: 1.332px; height: 1.332px; animation-delay: 1.31651s;">
+   </div>
+   <div class="star" style="left: 73.7134%; top: 87.061%; width: 1.94125px; height: 1.94125px; animation-delay: 0.117075s;">
+   </div>
+   <div class="star" style="left: 70.2673%; top: 90.8852%; width: 2.2313px; height: 2.2313px; animation-delay: 0.227062s;">
+   </div>
+   <div class="star" style="left: 85.522%; top: 50.658%; width: 3.06177px; height: 3.06177px; animation-delay: 0.660898s;">
+   </div>
+   <div class="star" style="left: 41.1187%; top: 24.2797%; width: 1.17232px; height: 1.17232px; animation-delay: 0.556275s;">
+   </div>
+   <div class="star" style="left: 69.3507%; top: 7.60054%; width: 2.10311px; height: 2.10311px; animation-delay: 1.89814s;">
+   </div>
+   <div class="star" style="left: 37.4716%; top: 41.2868%; width: 2.2573px; height: 2.2573px; animation-delay: 2.16853s;">
+   </div>
+   <div class="star" style="left: 88.6027%; top: 54.1977%; width: 2.02585px; height: 2.02585px; animation-delay: 2.96785s;">
+   </div>
+   <div class="star" style="left: 66.0464%; top: 81.7581%; width: 2.87905px; height: 2.87905px; animation-delay: 2.84401s;">
+   </div>
+   <div class="star" style="left: 57.1342%; top: 39.4352%; width: 3.59922px; height: 3.59922px; animation-delay: 0.363508s;">
+   </div>
+   <div class="star" style="left: 33.7404%; top: 58.048%; width: 3.20019px; height: 3.20019px; animation-delay: 2.48084s;">
+   </div>
+   <div class="star" style="left: 18.2795%; top: 11.1061%; width: 1.21473px; height: 1.21473px; animation-delay: 2.3834s;">
+   </div>
+   <div class="star" style="left: 43.3053%; top: 22.8596%; width: 2.60425px; height: 2.60425px; animation-delay: 0.0938046s;">
+   </div>
+   <div class="star" style="left: 91.4166%; top: 81.0038%; width: 1.17096px; height: 1.17096px; animation-delay: 0.088737s;">
+   </div>
+   <div class="star" style="left: 97.8755%; top: 47.3404%; width: 2.46567px; height: 2.46567px; animation-delay: 1.13921s;">
+   </div>
+   <div class="star" style="left: 43.5659%; top: 5.57705%; width: 1.46678px; height: 1.46678px; animation-delay: 1.26688s;">
+   </div>
+   <div class="star" style="left: 35.3383%; top: 88.7569%; width: 3.96588px; height: 3.96588px; animation-delay: 2.48464s;">
+   </div>
+   <div class="star" style="left: 78.1453%; top: 54.5293%; width: 2.60729px; height: 2.60729px; animation-delay: 0.113285s;">
+   </div>
+   <div class="star" style="left: 82.6056%; top: 21.2676%; width: 2.32432px; height: 2.32432px; animation-delay: 2.86124s;">
+   </div>
+   <div class="star" style="left: 17.2604%; top: 33.9747%; width: 2.38179px; height: 2.38179px; animation-delay: 0.581044s;">
+   </div>
+   <div class="star" style="left: 19.4181%; top: 56.8249%; width: 3.94514px; height: 3.94514px; animation-delay: 1.83823s;">
+   </div>
+   <div class="star" style="left: 17.5683%; top: 66.7%; width: 2.36215px; height: 2.36215px; animation-delay: 0.65302s;">
+   </div>
+   <div class="star" style="left: 9.48518%; top: 29.3889%; width: 1.8222px; height: 1.8222px; animation-delay: 2.69618s;">
+   </div>
+   <div class="star" style="left: 77.9622%; top: 78.7066%; width: 3.44732px; height: 3.44732px; animation-delay: 0.833952s;">
+   </div>
+   <div class="star" style="left: 52.1919%; top: 3.63712%; width: 3.61909px; height: 3.61909px; animation-delay: 0.84399s;">
+   </div>
+   <div class="star" style="left: 92.99%; top: 16.5807%; width: 2.13762px; height: 2.13762px; animation-delay: 2.74695s;">
+   </div>
+  </div>
+  <div class="stopwatch-container">
+   <div class="stopwatch-card">
+    <div class="timer-display" id="timer-display">
+     <span class="time-segment" id="hours" style="display: inline-block;">
+      00
+     </span>
+     <span class="separator" id="sep1" style="display: inline-block;">
+      :
+     </span>
+     <span class="time-segment" id="minutes" style="display: inline-block;">
+      00
+     </span>
+     <span class="separator" id="sep2">
+      :
+     </span>
+     <span class="time-segment" id="seconds" style="display: inline-block;">
+      00
+     </span>
+     <span class="time-segment" id="milliseconds" style="display: none;">
+      00
+     </span>
+    </div>
+    <div class="controls">
+     <button class="control-btn" id="startStopBtn">
+      Start
+     </button>
+     <button class="control-btn" id="resetBtn">
+      Reset
+     </button>
+    </div>
+    <div class="settings-panel">
+     <div class="setting-row" id="countdown-input-container">
+      <input id="countdown-input" placeholder="e.g., 1m 30s" type="text"/>
+     </div>
+     <div class="setting-row">
+      <span>
+       Countdown Mode
+      </span>
+      <label class="toggle-switch">
+       <input id="modeToggle" type="checkbox"/>
+       <span class="slider">
+       </span>
+      </label>
+     </div>
+     <div class="setting-row">
+      <span>
+       Milliseconds
+      </span>
+      <label class="toggle-switch">
+       <input id="msToggle" type="checkbox"/>
+       <span class="slider">
+       </span>
+      </label>
+     </div>
+    </div>
+   </div>
+  </div>
+  <audio id="beepSound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU9vT19OAPq/ERIMcCDs/h0iH5n/igB3AIA/v////vj5HwADAP//6/j/2AD//vv/4/3/8v/AAAD/APz//P8A/v8A">
+  </audio>
+  <script>
+   (function createStarfield() {
+    const starfield = document.getElementById('starfield');
+    if (!starfield) return;
+    const numberOfStars = 150;
+    for (let i = 0; i < numberOfStars; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        const size = Math.random() * 3 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.animationDelay = (Math.random() * 3) + 's';
+        starfield.appendChild(star);
+    }
+})();
+
+const display = document.getElementById('timer-display');
+const hoursEl = document.getElementById('hours');
+const minutesEl = document.getElementById('minutes');
+const secondsEl = document.getElementById('seconds');
+const millisecondsEl = document.getElementById('milliseconds');
+const sep1 = document.getElementById('sep1');
+const sep2 = document.getElementById('sep2');
+
+const startStopBtn = document.getElementById('startStopBtn');
+const resetBtn = document.getElementById('resetBtn');
+const msToggle = document.getElementById('msToggle');
+const modeToggle = document.getElementById('modeToggle');
+const countdownInputContainer = document.getElementById('countdown-input-container');
+const countdownInput = document.getElementById('countdown-input');
+const beepSound = document.getElementById('beepSound');
+
+let timerInterval = null;
+let isRunning = false;
+let startTime = 0;
+let elapsedTime = 0;
+let countdownTime = 0;
+
+function updateDomTime(timeInMs) {
+    const totalSeconds = Math.floor(timeInMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const milliseconds = Math.floor((timeInMs % 1000) / 10);
+
+    if (msToggle.checked) {
+        hoursEl.style.display = 'none';
+        sep1.style.display = 'none';
+        minutesEl.style.display = 'inline-block';
+        secondsEl.style.display = 'inline-block';
+        millisecondsEl.style.display = 'inline-block';
+
+        minutesEl.textContent = minutes.toString().padStart(2, '0');
+        secondsEl.textContent = seconds.toString().padStart(2, '0');
+        millisecondsEl.textContent = milliseconds.toString().padStart(2, '0');
+    } else {
+        hoursEl.style.display = 'inline-block';
+        sep1.style.display = 'inline-block';
+        minutesEl.style.display = 'inline-block';
+        secondsEl.style.display = 'inline-block';
+        millisecondsEl.style.display = 'none';
+
+        hoursEl.textContent = hours.toString().padStart(2, '0');
+        minutesEl.textContent = minutes.toString().padStart(2, '0');
+        secondsEl.textContent = seconds.toString().padStart(2, '0');
+    }
+}
+
+
+function updateDisplay() {
+    if (modeToggle.checked) {
+        const remaining = countdownTime - (Date.now() - startTime);
+        if (remaining <= 0) {
+            stopTimer(true);
+            updateDomTime(0);
+        } else {
+            updateDomTime(remaining);
+        }
+    } else {
+        elapsedTime = Date.now() - startTime;
+        updateDomTime(elapsedTime);
+    }
+}
+
+function startTimer() {
+    if (isRunning) return;
+
+    if (modeToggle.checked) {
+        if (countdownTime <= 0) return;
+        startTime = Date.now();
+    } else {
+        startTime = Date.now() - elapsedTime;
+    }
+
+    timerInterval = setInterval(updateDisplay, 10);
+    isRunning = true;
+    startStopBtn.textContent = "Stop";
+    startStopBtn.classList.add('running');
+    display.classList.remove('finished');
+}
+
+function stopTimer(finished = false) {
+    if (!isRunning) return;
+
+    clearInterval(timerInterval);
+    if (!modeToggle.checked) {
+        elapsedTime = Date.now() - startTime;
+    }
+    isRunning = false;
+    startStopBtn.textContent = "Start";
+    startStopBtn.classList.remove('running');
+
+    if (finished && beepSound) {
+        beepSound.play();
+        display.classList.add('finished');
+    }
+}
+
+function resetTimer() {
+    stopTimer();
+    elapsedTime = 0;
+    countdownTime = parseInputTime(countdownInput.value);
+    updateDomTime(modeToggle.checked ? countdownTime : 0);
+    display.classList.remove('finished');
+}
+
+function parseInputTime(input) {
+    let totalMs = 0;
+    const matches = input.match(/(\d+)\s*(h|m|s)/g) || [];
+    matches.forEach(match => {
+        const value = parseInt(match);
+        const unit = match.slice(-1);
+        if (unit === 'h') totalMs += value * 3600000;
+        if (unit === 'm') totalMs += value * 60000;
+        if (unit === 's') totalMs += value * 1000;
+    });
+    return totalMs;
+}
+
+startStopBtn.addEventListener('click', () => {
+    if (isRunning) { stopTimer(); } else { startTimer(); }
+});
+
+resetBtn.addEventListener('click', resetTimer);
+
+msToggle.addEventListener('change', () => {
+    let currentTime = modeToggle.checked ? (isRunning ? countdownTime - (Date.now() - startTime) : countdownTime) : elapsedTime;
+    if (currentTime < 0) currentTime = 0;
+    updateDomTime(currentTime);
+});
+
+modeToggle.addEventListener('change', () => {
+    if (modeToggle.checked) {
+        countdownInputContainer.style.display = 'block';
+    } else {
+        countdownInputContainer.style.display = 'none';
+    }
+    resetTimer();
+});
+
+countdownInput.addEventListener('input', () => {
+    countdownTime = parseInputTime(countdownInput.value);
+    if (!isRunning) {
+        updateDomTime(countdownTime);
+    }
+});
+
+updateDomTime(0);
+  </script>
+ </body>
+</html>

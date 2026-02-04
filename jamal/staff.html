@@ -1,0 +1,889 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Jamal's Game Hub
+  </title>
+  <link href="https://iili.io/fHrIxvj.png" rel="icon" type="image/png"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="css/css2" rel="stylesheet"/>
+  <link href="css/all.min.css" rel="stylesheet"/>
+  <style>
+   {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+:root {
+--background: hsl(260, 40%, 8%);
+--foreground: hsl(300, 20%, 95%);
+--muted-foreground: hsl(300, 10%, 60%);
+--accent: hsl(315, 80%, 70%);
+--primary: hsl(330, 100%, 60%);
+--font-mono: 'Orbitron', 'Menlo', monospace;
+--font-sans: 'Rajdhani', 'Open Sans', sans-serif;
+}
+body {
+font-family: var(--font-sans);
+background-color: var(--background);
+color: var(--foreground);
+min-height: 100vh;
+padding: 6rem 2rem 2rem;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+overflow-x: hidden;
+position: relative;
+}
+
+.starfield {
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+z-index: 1;
+pointer-events: none;
+overflow: hidden;
+}
+
+.star {
+position: absolute;
+background: white;
+border-radius: 50%;
+animation: twinkle 3s infinite;
+}
+.star:nth-child(odd) {animation-delay: 1.5s;}
+.star:nth-child(3n) {animation-delay: 0.5s;}
+@keyframes twinkle {
+0%,100% {opacity: 0.3; transform: scale(0.8);}
+50% {opacity: 1; transform: scale(1.2);}
+}
+
+.neon-title {
+position: relative;
+z-index: 10;
+font-family: var(--font-mono);
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 0.2em;
+color: #fff;
+font-size: clamp(4rem, 15vw, 9rem);
+text-align: center;
+margin-bottom: 3rem;
+text-shadow:
+0 0 10px #ff0080,
+0 0 20px #ff0080,
+0 0 30px #ff0080,
+0 0 40px #ff0080,
+0 0 70px #ff0080,
+0 0 80px #ff0080,
+0 0 100px #ff0080,
+0 0 150px #ff0080;
+animation: neonFlicker 2s infinite alternate;
+}
+@keyframes neonFlicker {
+0%,100% {
+text-shadow:
+0 0 10px #ff0080,
+0 0 20px #ff0080,
+0 0 30px #ff0080,
+0 0 40px #ff0080,
+0 0 70px #ff0080,
+0 0 80px #ff0080,
+0 0 100px #ff0080,
+0 0 150px #ff0080;
+}
+50% {
+text-shadow:
+0 0 5px #ff3366,
+0 0 15px #ff3366,
+0 0 25px #ff3366,
+0 0 35px #ff3366,
+0 0 60px #ff3366,
+0 0 70px #ff3366,
+0 0 90px #ff3366,
+0 0 120px #ff3366;
+}
+}
+
+.staff-container {
+position: relative;
+z-index: 10;
+display: flex;
+flex-wrap: wrap;
+gap: 3rem;
+justify-content: center;
+width: 100%;
+max-width: 64rem;
+}
+.staff-card {
+    background-color: var(--background);
+    background-image: linear-gradient(45deg, rgba(255, 0, 128, 0.1), rgba(128, 0, 255, 0.1));
+    border: 2px solid rgba(255, 0, 128, 0.3);
+    border-radius: 12px;
+    padding: 2rem 1.5rem 2rem;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow:
+        0 0 20px rgba(255, 0, 128, 0.3),
+        inset 0 0 10px rgba(255, 0, 128, 0.2);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.staff-card:hover {
+    border-color: var(--primary);
+    box-shadow: inset 0 0 10px rgba(255, 0, 128, 0.2), 0 0 15px var(--primary);
+}
+
+
+.particle {
+  position: fixed;
+  background-color: var(--primary);
+  border-radius: 50%;
+  opacity: 1;
+  pointer-events: none;
+  animation: particle-effect 1s forwards;
+  z-index: 999;
+}
+
+@keyframes particle-effect {
+  from {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+  to {
+    transform: var(--transform-end);
+    opacity: 0;
+  }
+}
+
+.staff-picture {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background-color: var(--background);
+    background-image: linear-gradient(rgba(255, 0, 128, 0.2), rgba(255, 0, 128, 0.2));
+    border: 3px solid var(--accent);
+    margin-bottom: 1.5rem;
+    background-size: cover;
+    background-position: center;
+    box-shadow:
+    0 0 10px rgba(255, 0, 128, 0.8);
+} 
+
+.staff-name {
+font-family: var(--font-mono);
+font-weight: 700;
+font-size: 1.8rem;
+color: #fff;
+margin-bottom: 1rem;
+text-align: center;
+}
+
+.staff-info {
+    width: 100%;
+    background-color: var(--background);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 0, 128, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: #fff;
+    line-height: 1.4;
+    pointer-events: none;
+    user-select: none;
+    min-height: 100px;
+    overflow-y: auto;
+}
+
+.contact-info {
+margin-top: 1rem;
+width: 100%;
+border-top: 1px solid rgba(255, 0, 128, 0.3);
+padding-top: 0.8rem;
+font-family: var(--font-sans);
+color: #fff;
+font-size: 0.9rem;
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+}
+
+.contact-row {
+display: flex;
+align-items: center;
+gap: 0.6rem;
+}
+
+.contact-icon {
+width: 20px;
+height: 20px;
+filter: drop-shadow(0 0 2px #ff0080); 
+}
+
+.contact-text {
+user-select: text;
+}
+
+@media (max-width: 600px) {
+.staff-container {
+flex-direction: column;
+align-items: center;
+}
+.staff-card {
+width: 90%;
+}
+}
+  </style>
+ </head>
+ <body>
+  <!-- =================== START OF MENU BAR THINGY =================== -->
+  <style>
+   .main-nav {font-family: var(--font-sans);background-color: rgba(15, 12, 25, 0.85);backdrop-filter: blur(10px);border-bottom: 2px solid rgba(255, 0, 128, 0.3);box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);width: 100%;position: fixed;top: -80px; left: 0;z-index: 1000;transition: top 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);padding: 0.5rem 0;}
+    .main-nav.visible {top: 0; }
+    .nav-content {display: flex;align-items: center;padding: 0 2rem;max-width: 1200px;margin: 0 auto;}
+    
+    .nav-logo-title {display: flex;align-items: center;gap: 1rem;text-decoration: none;}
+    .nav-logo-title img { height: 40px;}
+    .nav-logo-title .site-title {font-family: var(--font-mono);font-size: 1.5rem;font-weight: 700;color: var(--foreground);text-shadow: 0 0 8px var(--primary);}
+    
+    .nav-links {list-style: none;margin: 0;padding: 0;display: flex;gap: 0.5rem;margin-left: auto; }
+    .nav-links li { position: relative; }
+    .nav-links a {display: flex; align-items: center; color: var(--muted-foreground);text-decoration: none;padding: 0.8rem 1rem;font-size: 1rem;font-weight: 600;border-radius: 8px;transition: all 0.3s ease;}
+    .nav-links a:hover,.nav-links a.active {color: var(--foreground);background-color: rgba(255, 0, 128, 0.1);text-shadow: 0 0 5px var(--primary);}
+    
+    .nav-links a i:not(.fa-caret-down) { margin-right: 8px; }
+    .nav-links a i.fa-caret-down { margin-left: 0.3rem; }
+    
+    .dropdown-content {display: none;position: absolute;top: 100%;left: 0;background-color: rgba(25, 22, 40, 0.95);border: 1px solid rgba(255, 0, 128, 0.3);border-radius: 0 0 8px 8px;min-width: 200px;box-shadow: 0 8px 16px rgba(0,0,0,0.3);z-index: 1;padding: 0.5rem 0;overflow: hidden;}
+    .dropdown:hover .dropdown-content { display: block; }
+    .dropdown-content a {width: 100%;text-align: left;border-radius: 0;padding: 0.8rem 1.5rem;box-sizing: border-box;}
+    
+    .nav-toggle-btn {position: fixed;top: 1rem;right: 2rem;z-index: 1001;background: rgba(15, 12, 25, 0.85);border: 2px solid var(--muted-foreground);color: var(--muted-foreground);border-radius: 8px;width: 40px;height: 40px;cursor: pointer;font-size: 1.2rem;transition: all 0.3s ease;}
+    .nav-toggle-btn:hover {border-color: var(--primary);color: var(--primary);box-shadow: 0 0 10px var(--primary);}
+    .nav-toggle-btn .arrow-up { display: none; }
+    .nav-toggle-btn.active .arrow-up { display: inline; }
+    .nav-toggle-btn.active .arrow-down { display: none; }
+  </style>
+  <nav class="main-nav visible" id="mainNav">
+   <div class="nav-content">
+    <a class="nav-logo-title" href="index.html">
+     <img alt="Site Logo" src="images/fHrIxvj.png"/>
+     <span class="site-title">
+      Jamal's Game Hub
+     </span>
+    </a>
+    <ul class="nav-links">
+     <li>
+      <a href="index.html">
+       <i class="fas fa-home">
+       </i>
+       Home
+      </a>
+     </li>
+     <li>
+      <a href="media.html">
+       <i class="fas fa-tv">
+       </i>
+       Media
+      </a>
+     </li>
+     <li>
+      <a href="vortex.html">
+       <i class="fas fa-comment-dots">
+       </i>
+       Vortex
+      </a>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-rocket">
+       </i>
+       Proxies
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="proxyinfo.html">
+        Proxies Info
+       </a>
+       <a href="proxies.html">
+        Proxies
+       </a>
+       <a href="proxydrop.html">
+        Proxy Link Drops
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-gamepad">
+       </i>
+       Game Sites
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="gamesites.html">
+        Game Sites
+       </a>
+       <a href="gamesiteslinkdrop.html">
+        Game Site Link Drops
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-tools">
+       </i>
+       Tools
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="durlgen.html">
+        Data URL Gen
+       </a>
+       <a href="abtblnk.html">
+        About:blank tab opener
+       </a>
+       <a href="viewer.html">
+        HTML viewer
+       </a>
+       <a href="translate.html">
+        Translator
+       </a>
+       <a href="unitconverter.html">
+        Unit Converter
+       </a>
+       <a href="stopwatch.html">
+        Stopwatch
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-info-circle">
+       </i>
+       Important
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="staff.html">
+        Staff
+       </a>
+       <a href="updatelog.html">
+        Update Log
+       </a>
+       <a href="partners.html">
+        Partners
+       </a>
+       <a href="credits.html">
+        Credits
+       </a>
+       <a href="contact.html">
+        Contact Form
+       </a>
+      </div>
+     </li>
+    </ul>
+   </div>
+  </nav>
+  <button class="nav-toggle-btn active" id="navToggle">
+   <i class="fas fa-chevron-down arrow-down">
+   </i>
+   <i class="fas fa-chevron-up arrow-up">
+   </i>
+  </button>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+        if (window.navMenuLoaded) return;
+        window.navMenuLoaded = true;
+
+        const mainNav = document.getElementById('mainNav');
+        const navToggle = document.getElementById('navToggle');
+        
+        function toggleMenu() {
+            mainNav.classList.toggle('visible');
+            navToggle.classList.toggle('active');
+        }
+
+        navToggle.addEventListener('click', toggleMenu);
+
+        setTimeout(() => {
+            mainNav.classList.add('visible');
+            navToggle.classList.add('active');
+        }, 100); 
+    });
+  </script>
+  <!-- ===========================END OF MENU BAR THINGY=======================-->
+  <div class="starfield" id="starfield">
+   <div class="star" style="left: 43.2255%; top: 78.4858%; width: 2.34039px; height: 2.34039px; animation-delay: 1.18141s;">
+   </div>
+   <div class="star" style="left: 9.32097%; top: 81.8321%; width: 2.68453px; height: 2.68453px; animation-delay: 0.264677s;">
+   </div>
+   <div class="star" style="left: 92.7444%; top: 67.6214%; width: 3.5931px; height: 3.5931px; animation-delay: 2.83921s;">
+   </div>
+   <div class="star" style="left: 86.5004%; top: 3.06493%; width: 1.48924px; height: 1.48924px; animation-delay: 0.287307s;">
+   </div>
+   <div class="star" style="left: 29.0186%; top: 76.2098%; width: 2.99328px; height: 2.99328px; animation-delay: 0.176851s;">
+   </div>
+   <div class="star" style="left: 41.4957%; top: 85.9943%; width: 1.05133px; height: 1.05133px; animation-delay: 0.819159s;">
+   </div>
+   <div class="star" style="left: 78.6956%; top: 95.4626%; width: 1.74686px; height: 1.74686px; animation-delay: 0.440553s;">
+   </div>
+   <div class="star" style="left: 91.1906%; top: 61.6964%; width: 3.13906px; height: 3.13906px; animation-delay: 2.58587s;">
+   </div>
+   <div class="star" style="left: 40.5453%; top: 53.2793%; width: 2.62322px; height: 2.62322px; animation-delay: 1.84354s;">
+   </div>
+   <div class="star" style="left: 50.9525%; top: 16.1273%; width: 1.06621px; height: 1.06621px; animation-delay: 2.21567s;">
+   </div>
+   <div class="star" style="left: 53.7339%; top: 56.21%; width: 3.37599px; height: 3.37599px; animation-delay: 2.28143s;">
+   </div>
+   <div class="star" style="left: 5.61945%; top: 0.790749%; width: 1.29627px; height: 1.29627px; animation-delay: 0.683241s;">
+   </div>
+   <div class="star" style="left: 59.4517%; top: 9.15922%; width: 3.47876px; height: 3.47876px; animation-delay: 0.62343s;">
+   </div>
+   <div class="star" style="left: 28.858%; top: 88.226%; width: 2.23079px; height: 2.23079px; animation-delay: 0.806648s;">
+   </div>
+   <div class="star" style="left: 51.4046%; top: 82.7702%; width: 1.54442px; height: 1.54442px; animation-delay: 0.810421s;">
+   </div>
+   <div class="star" style="left: 24.9521%; top: 98.9146%; width: 3.30062px; height: 3.30062px; animation-delay: 0.217613s;">
+   </div>
+   <div class="star" style="left: 5.96578%; top: 83.287%; width: 2.59078px; height: 2.59078px; animation-delay: 1.00915s;">
+   </div>
+   <div class="star" style="left: 46.7731%; top: 49.2444%; width: 1.72117px; height: 1.72117px; animation-delay: 1.47901s;">
+   </div>
+   <div class="star" style="left: 87.1567%; top: 28.139%; width: 2.57314px; height: 2.57314px; animation-delay: 1.92633s;">
+   </div>
+   <div class="star" style="left: 25.7914%; top: 54.8995%; width: 2.03148px; height: 2.03148px; animation-delay: 2.40087s;">
+   </div>
+   <div class="star" style="left: 55.2022%; top: 94.8721%; width: 3.32703px; height: 3.32703px; animation-delay: 0.579905s;">
+   </div>
+   <div class="star" style="left: 71.0674%; top: 19.4234%; width: 2.96938px; height: 2.96938px; animation-delay: 2.30638s;">
+   </div>
+   <div class="star" style="left: 88.0918%; top: 40.5111%; width: 2.38131px; height: 2.38131px; animation-delay: 0.830172s;">
+   </div>
+   <div class="star" style="left: 87.477%; top: 67.4484%; width: 3.38265px; height: 3.38265px; animation-delay: 2.78932s;">
+   </div>
+   <div class="star" style="left: 90.2349%; top: 6.77381%; width: 3.81569px; height: 3.81569px; animation-delay: 0.666815s;">
+   </div>
+   <div class="star" style="left: 22.1505%; top: 87.6337%; width: 3.57261px; height: 3.57261px; animation-delay: 2.82697s;">
+   </div>
+   <div class="star" style="left: 40.1411%; top: 0.532443%; width: 3.25217px; height: 3.25217px; animation-delay: 0.407969s;">
+   </div>
+   <div class="star" style="left: 67.3672%; top: 51.3579%; width: 1.73752px; height: 1.73752px; animation-delay: 0.864729s;">
+   </div>
+   <div class="star" style="left: 59.211%; top: 19.3172%; width: 1.12792px; height: 1.12792px; animation-delay: 1.94015s;">
+   </div>
+   <div class="star" style="left: 71.7427%; top: 49.6922%; width: 2.72992px; height: 2.72992px; animation-delay: 0.861618s;">
+   </div>
+   <div class="star" style="left: 49.735%; top: 2.21182%; width: 3.15437px; height: 3.15437px; animation-delay: 1.60856s;">
+   </div>
+   <div class="star" style="left: 29.6403%; top: 73.0209%; width: 3.70941px; height: 3.70941px; animation-delay: 0.501025s;">
+   </div>
+   <div class="star" style="left: 4.91804%; top: 43.609%; width: 1.63493px; height: 1.63493px; animation-delay: 0.287066s;">
+   </div>
+   <div class="star" style="left: 35.7552%; top: 77.8461%; width: 2.79461px; height: 2.79461px; animation-delay: 0.365582s;">
+   </div>
+   <div class="star" style="left: 7.594%; top: 72.8937%; width: 2.10347px; height: 2.10347px; animation-delay: 2.28872s;">
+   </div>
+   <div class="star" style="left: 0.745137%; top: 26.263%; width: 1.89488px; height: 1.89488px; animation-delay: 1.48879s;">
+   </div>
+   <div class="star" style="left: 65.5737%; top: 3.0634%; width: 2.85079px; height: 2.85079px; animation-delay: 1.76018s;">
+   </div>
+   <div class="star" style="left: 99.057%; top: 16.9199%; width: 2.97996px; height: 2.97996px; animation-delay: 2.00489s;">
+   </div>
+   <div class="star" style="left: 29.208%; top: 8.16485%; width: 2.42598px; height: 2.42598px; animation-delay: 2.25488s;">
+   </div>
+   <div class="star" style="left: 40.7014%; top: 73.7869%; width: 1.52938px; height: 1.52938px; animation-delay: 1.5404s;">
+   </div>
+   <div class="star" style="left: 59.8139%; top: 89.5531%; width: 2.44133px; height: 2.44133px; animation-delay: 2.18889s;">
+   </div>
+   <div class="star" style="left: 80.4439%; top: 58.2285%; width: 2.22536px; height: 2.22536px; animation-delay: 1.77147s;">
+   </div>
+   <div class="star" style="left: 86.847%; top: 21.8443%; width: 3.98362px; height: 3.98362px; animation-delay: 2.12112s;">
+   </div>
+   <div class="star" style="left: 72.3849%; top: 54.9985%; width: 1.11482px; height: 1.11482px; animation-delay: 1.23632s;">
+   </div>
+   <div class="star" style="left: 23.4415%; top: 5.37525%; width: 3.24002px; height: 3.24002px; animation-delay: 0.935617s;">
+   </div>
+   <div class="star" style="left: 65.8318%; top: 83.1348%; width: 1.04976px; height: 1.04976px; animation-delay: 2.93498s;">
+   </div>
+   <div class="star" style="left: 51.3355%; top: 44.6589%; width: 1.471px; height: 1.471px; animation-delay: 2.44911s;">
+   </div>
+   <div class="star" style="left: 21.5793%; top: 76.0937%; width: 3.97368px; height: 3.97368px; animation-delay: 2.95323s;">
+   </div>
+   <div class="star" style="left: 4.79785%; top: 71.8143%; width: 2.26184px; height: 2.26184px; animation-delay: 1.51026s;">
+   </div>
+   <div class="star" style="left: 65.8237%; top: 50.8464%; width: 2.14553px; height: 2.14553px; animation-delay: 0.196761s;">
+   </div>
+   <div class="star" style="left: 74.6806%; top: 64.2915%; width: 3.0845px; height: 3.0845px; animation-delay: 1.98918s;">
+   </div>
+   <div class="star" style="left: 74.1467%; top: 15.2628%; width: 2.68559px; height: 2.68559px; animation-delay: 2.48825s;">
+   </div>
+   <div class="star" style="left: 25.203%; top: 38.3485%; width: 2.27405px; height: 2.27405px; animation-delay: 0.359365s;">
+   </div>
+   <div class="star" style="left: 28.8123%; top: 36.4778%; width: 2.26642px; height: 2.26642px; animation-delay: 0.736824s;">
+   </div>
+   <div class="star" style="left: 45.2351%; top: 89.7849%; width: 2.51328px; height: 2.51328px; animation-delay: 2.97741s;">
+   </div>
+   <div class="star" style="left: 44.5474%; top: 28.9366%; width: 1.80959px; height: 1.80959px; animation-delay: 2.60479s;">
+   </div>
+   <div class="star" style="left: 37.9057%; top: 99.7128%; width: 3.70665px; height: 3.70665px; animation-delay: 1.43768s;">
+   </div>
+   <div class="star" style="left: 11.7075%; top: 29.0745%; width: 3.84446px; height: 3.84446px; animation-delay: 2.2663s;">
+   </div>
+   <div class="star" style="left: 98.4651%; top: 67.1261%; width: 2.45488px; height: 2.45488px; animation-delay: 2.31006s;">
+   </div>
+   <div class="star" style="left: 8.96318%; top: 39.8463%; width: 1.70322px; height: 1.70322px; animation-delay: 0.802264s;">
+   </div>
+   <div class="star" style="left: 0.671678%; top: 22.3693%; width: 2.82785px; height: 2.82785px; animation-delay: 2.67232s;">
+   </div>
+   <div class="star" style="left: 47.7489%; top: 77.4005%; width: 3.89019px; height: 3.89019px; animation-delay: 2.5422s;">
+   </div>
+   <div class="star" style="left: 0.932707%; top: 62.2475%; width: 1.29504px; height: 1.29504px; animation-delay: 1.08802s;">
+   </div>
+   <div class="star" style="left: 22.461%; top: 71.2704%; width: 3.21729px; height: 3.21729px; animation-delay: 1.50498s;">
+   </div>
+   <div class="star" style="left: 95.8162%; top: 95.1918%; width: 2.05286px; height: 2.05286px; animation-delay: 0.270889s;">
+   </div>
+   <div class="star" style="left: 63.3565%; top: 71.2533%; width: 2.24168px; height: 2.24168px; animation-delay: 0.921526s;">
+   </div>
+   <div class="star" style="left: 48.5667%; top: 9.47311%; width: 1.14624px; height: 1.14624px; animation-delay: 0.763805s;">
+   </div>
+   <div class="star" style="left: 27.0801%; top: 48.4104%; width: 1.19757px; height: 1.19757px; animation-delay: 0.292395s;">
+   </div>
+   <div class="star" style="left: 88.1259%; top: 54.4112%; width: 2.03534px; height: 2.03534px; animation-delay: 2.0343s;">
+   </div>
+   <div class="star" style="left: 30.2994%; top: 8.25605%; width: 3.21154px; height: 3.21154px; animation-delay: 2.51306s;">
+   </div>
+   <div class="star" style="left: 57.5197%; top: 98.8338%; width: 3.27686px; height: 3.27686px; animation-delay: 2.20998s;">
+   </div>
+   <div class="star" style="left: 85.5968%; top: 96.3557%; width: 2.13874px; height: 2.13874px; animation-delay: 2.08085s;">
+   </div>
+   <div class="star" style="left: 86.7482%; top: 44.3964%; width: 2.59573px; height: 2.59573px; animation-delay: 0.908944s;">
+   </div>
+   <div class="star" style="left: 84.296%; top: 29.7622%; width: 2.88556px; height: 2.88556px; animation-delay: 1.96978s;">
+   </div>
+   <div class="star" style="left: 0.491441%; top: 36.3251%; width: 1.13463px; height: 1.13463px; animation-delay: 2.44545s;">
+   </div>
+   <div class="star" style="left: 82.6456%; top: 48.6397%; width: 1.22061px; height: 1.22061px; animation-delay: 0.342744s;">
+   </div>
+   <div class="star" style="left: 31.3833%; top: 13.1952%; width: 1.21928px; height: 1.21928px; animation-delay: 1.52616s;">
+   </div>
+   <div class="star" style="left: 67.4405%; top: 48.8149%; width: 1.44617px; height: 1.44617px; animation-delay: 1.71941s;">
+   </div>
+   <div class="star" style="left: 55.1561%; top: 19.6845%; width: 2.6891px; height: 2.6891px; animation-delay: 2.76159s;">
+   </div>
+   <div class="star" style="left: 25.7494%; top: 41.8263%; width: 1.76124px; height: 1.76124px; animation-delay: 2.75661s;">
+   </div>
+   <div class="star" style="left: 9.37936%; top: 84.2871%; width: 3.19863px; height: 3.19863px; animation-delay: 1.99575s;">
+   </div>
+   <div class="star" style="left: 75.5934%; top: 30.0908%; width: 3.76606px; height: 3.76606px; animation-delay: 2.17299s;">
+   </div>
+   <div class="star" style="left: 5.30587%; top: 43.0278%; width: 2.38952px; height: 2.38952px; animation-delay: 2.29446s;">
+   </div>
+   <div class="star" style="left: 71.226%; top: 98.466%; width: 2.85407px; height: 2.85407px; animation-delay: 1.93609s;">
+   </div>
+   <div class="star" style="left: 0.767174%; top: 51.7195%; width: 3.79923px; height: 3.79923px; animation-delay: 0.998255s;">
+   </div>
+   <div class="star" style="left: 83.721%; top: 43.6842%; width: 2.49158px; height: 2.49158px; animation-delay: 1.26203s;">
+   </div>
+   <div class="star" style="left: 39.5191%; top: 48.3347%; width: 1.16378px; height: 1.16378px; animation-delay: 0.776361s;">
+   </div>
+   <div class="star" style="left: 74.649%; top: 13.174%; width: 2.70943px; height: 2.70943px; animation-delay: 1.78373s;">
+   </div>
+   <div class="star" style="left: 78.103%; top: 68.0881%; width: 3.28866px; height: 3.28866px; animation-delay: 0.866686s;">
+   </div>
+   <div class="star" style="left: 57.3461%; top: 54.6636%; width: 1.23848px; height: 1.23848px; animation-delay: 2.86663s;">
+   </div>
+   <div class="star" style="left: 26.3521%; top: 85.4336%; width: 1.33396px; height: 1.33396px; animation-delay: 0.88374s;">
+   </div>
+   <div class="star" style="left: 76.8155%; top: 79.1804%; width: 2.61775px; height: 2.61775px; animation-delay: 0.041996s;">
+   </div>
+   <div class="star" style="left: 70.0656%; top: 11.2581%; width: 2.31812px; height: 2.31812px; animation-delay: 0.116179s;">
+   </div>
+   <div class="star" style="left: 26.6015%; top: 38.0499%; width: 2.73302px; height: 2.73302px; animation-delay: 1.50707s;">
+   </div>
+   <div class="star" style="left: 82.0174%; top: 89.3186%; width: 1.63516px; height: 1.63516px; animation-delay: 1.98397s;">
+   </div>
+   <div class="star" style="left: 62.533%; top: 23.2516%; width: 1.08519px; height: 1.08519px; animation-delay: 0.0376408s;">
+   </div>
+   <div class="star" style="left: 82.2983%; top: 87.7722%; width: 3.63065px; height: 3.63065px; animation-delay: 0.250851s;">
+   </div>
+   <div class="star" style="left: 95.0695%; top: 86.6304%; width: 1.74379px; height: 1.74379px; animation-delay: 2.50048s;">
+   </div>
+   <div class="star" style="left: 3.93301%; top: 88.9556%; width: 2.17955px; height: 2.17955px; animation-delay: 2.00445s;">
+   </div>
+   <div class="star" style="left: 72.5968%; top: 75.692%; width: 1.45495px; height: 1.45495px; animation-delay: 1.39398s;">
+   </div>
+   <div class="star" style="left: 83.4821%; top: 85.4729%; width: 1.63695px; height: 1.63695px; animation-delay: 0.55342s;">
+   </div>
+   <div class="star" style="left: 50.1671%; top: 99.5112%; width: 1.06161px; height: 1.06161px; animation-delay: 2.2626s;">
+   </div>
+   <div class="star" style="left: 38.8251%; top: 51.9652%; width: 1.16135px; height: 1.16135px; animation-delay: 0.138664s;">
+   </div>
+   <div class="star" style="left: 54.8163%; top: 81.8043%; width: 2.8764px; height: 2.8764px; animation-delay: 1.4597s;">
+   </div>
+   <div class="star" style="left: 48.3528%; top: 93.7948%; width: 1.5054px; height: 1.5054px; animation-delay: 1.89192s;">
+   </div>
+   <div class="star" style="left: 93.8631%; top: 52.3391%; width: 2.29985px; height: 2.29985px; animation-delay: 0.415894s;">
+   </div>
+   <div class="star" style="left: 85.0188%; top: 3.02093%; width: 1.47206px; height: 1.47206px; animation-delay: 0.0118744s;">
+   </div>
+   <div class="star" style="left: 56.3986%; top: 39.678%; width: 3.82917px; height: 3.82917px; animation-delay: 1.74424s;">
+   </div>
+   <div class="star" style="left: 52.9062%; top: 30.0222%; width: 1.20465px; height: 1.20465px; animation-delay: 2.12965s;">
+   </div>
+   <div class="star" style="left: 44.2798%; top: 1.18757%; width: 3.8209px; height: 3.8209px; animation-delay: 1.91991s;">
+   </div>
+   <div class="star" style="left: 57.6961%; top: 69.7957%; width: 1.30056px; height: 1.30056px; animation-delay: 2.55757s;">
+   </div>
+   <div class="star" style="left: 23.6461%; top: 70.1022%; width: 2.49992px; height: 2.49992px; animation-delay: 1.31577s;">
+   </div>
+   <div class="star" style="left: 66.6276%; top: 29.7422%; width: 3.47527px; height: 3.47527px; animation-delay: 0.664141s;">
+   </div>
+   <div class="star" style="left: 95.631%; top: 29.2677%; width: 1.794px; height: 1.794px; animation-delay: 0.127625s;">
+   </div>
+   <div class="star" style="left: 54.7401%; top: 25.7084%; width: 2.04585px; height: 2.04585px; animation-delay: 1.79194s;">
+   </div>
+   <div class="star" style="left: 78.4207%; top: 22.1408%; width: 1.57227px; height: 1.57227px; animation-delay: 2.47734s;">
+   </div>
+   <div class="star" style="left: 2.60788%; top: 38.4938%; width: 2.35052px; height: 2.35052px; animation-delay: 1.80351s;">
+   </div>
+   <div class="star" style="left: 74.0087%; top: 94.1045%; width: 3.7259px; height: 3.7259px; animation-delay: 0.0785094s;">
+   </div>
+   <div class="star" style="left: 85.9875%; top: 91.7046%; width: 1.40432px; height: 1.40432px; animation-delay: 1.56077s;">
+   </div>
+   <div class="star" style="left: 23.7299%; top: 52.0779%; width: 2.08828px; height: 2.08828px; animation-delay: 1.9747s;">
+   </div>
+   <div class="star" style="left: 21.0462%; top: 83.8959%; width: 3.30792px; height: 3.30792px; animation-delay: 1.55469s;">
+   </div>
+   <div class="star" style="left: 98.6245%; top: 1.73706%; width: 2.98676px; height: 2.98676px; animation-delay: 2.82233s;">
+   </div>
+   <div class="star" style="left: 13.7347%; top: 20.8874%; width: 2.98944px; height: 2.98944px; animation-delay: 2.24641s;">
+   </div>
+   <div class="star" style="left: 78.5563%; top: 42.0728%; width: 2.10058px; height: 2.10058px; animation-delay: 2.2891s;">
+   </div>
+   <div class="star" style="left: 41.0224%; top: 28.6133%; width: 1.43204px; height: 1.43204px; animation-delay: 2.64208s;">
+   </div>
+   <div class="star" style="left: 33.4077%; top: 76.1391%; width: 3.17793px; height: 3.17793px; animation-delay: 1.84359s;">
+   </div>
+   <div class="star" style="left: 57.8707%; top: 15.0389%; width: 2.95018px; height: 2.95018px; animation-delay: 2.68177s;">
+   </div>
+   <div class="star" style="left: 64.2559%; top: 13.9298%; width: 3.90473px; height: 3.90473px; animation-delay: 0.62377s;">
+   </div>
+   <div class="star" style="left: 59.9482%; top: 31.9761%; width: 3.64867px; height: 3.64867px; animation-delay: 2.19907s;">
+   </div>
+   <div class="star" style="left: 61.4984%; top: 4.87036%; width: 3.95777px; height: 3.95777px; animation-delay: 0.340328s;">
+   </div>
+   <div class="star" style="left: 9.68711%; top: 77.2605%; width: 2.868px; height: 2.868px; animation-delay: 2.37067s;">
+   </div>
+   <div class="star" style="left: 42.5538%; top: 82.8197%; width: 3.78843px; height: 3.78843px; animation-delay: 2.20692s;">
+   </div>
+   <div class="star" style="left: 20.295%; top: 2.75586%; width: 3.4802px; height: 3.4802px; animation-delay: 2.34752s;">
+   </div>
+   <div class="star" style="left: 94.8464%; top: 82.8469%; width: 3.36553px; height: 3.36553px; animation-delay: 0.212979s;">
+   </div>
+   <div class="star" style="left: 59.6448%; top: 93.0166%; width: 1.57778px; height: 1.57778px; animation-delay: 2.81521s;">
+   </div>
+   <div class="star" style="left: 80.5035%; top: 59.8157%; width: 1.63093px; height: 1.63093px; animation-delay: 0.142801s;">
+   </div>
+   <div class="star" style="left: 75.9116%; top: 20.0305%; width: 3.44564px; height: 3.44564px; animation-delay: 1.72594s;">
+   </div>
+   <div class="star" style="left: 65.1793%; top: 78.9883%; width: 2.78878px; height: 2.78878px; animation-delay: 2.41921s;">
+   </div>
+   <div class="star" style="left: 60.0136%; top: 10.579%; width: 3.0899px; height: 3.0899px; animation-delay: 2.1359s;">
+   </div>
+   <div class="star" style="left: 47.5479%; top: 87.4482%; width: 1.39346px; height: 1.39346px; animation-delay: 0.927816s;">
+   </div>
+   <div class="star" style="left: 11.5652%; top: 93.432%; width: 3.11568px; height: 3.11568px; animation-delay: 2.47383s;">
+   </div>
+   <div class="star" style="left: 78.1962%; top: 49.939%; width: 3.05099px; height: 3.05099px; animation-delay: 0.480143s;">
+   </div>
+   <div class="star" style="left: 59.2841%; top: 56.5518%; width: 3.85319px; height: 3.85319px; animation-delay: 1.84788s;">
+   </div>
+   <div class="star" style="left: 44.3635%; top: 93.663%; width: 2.4773px; height: 2.4773px; animation-delay: 0.875953s;">
+   </div>
+   <div class="star" style="left: 89.8801%; top: 42.3343%; width: 1.03257px; height: 1.03257px; animation-delay: 2.69501s;">
+   </div>
+   <div class="star" style="left: 22.5855%; top: 53.5559%; width: 3.11546px; height: 3.11546px; animation-delay: 2.78722s;">
+   </div>
+   <div class="star" style="left: 59.6048%; top: 51.8722%; width: 3.91817px; height: 3.91817px; animation-delay: 1.09197s;">
+   </div>
+   <div class="star" style="left: 56.0677%; top: 33.9929%; width: 1.6746px; height: 1.6746px; animation-delay: 0.965526s;">
+   </div>
+   <div class="star" style="left: 61.6246%; top: 47.6469%; width: 2.15478px; height: 2.15478px; animation-delay: 1.69439s;">
+   </div>
+   <div class="star" style="left: 25.0032%; top: 51.1823%; width: 2.56461px; height: 2.56461px; animation-delay: 1.6156s;">
+   </div>
+  </div>
+  <h1 class="neon-title">
+   STAFF
+  </h1>
+  <div class="staff-container">
+   <div class="staff-card">
+    <div alt="Staff Member 1" class="staff-picture" style="background-image: url('images/C1ceNFbS2Brs.webp');">
+    </div>
+    <div class="staff-name">
+     Jamal
+    </div>
+    <div aria-label="jamal info" class="staff-info">
+     idk what to put here but i own the site ig and yeah
+    </div>
+    <div class="contact-info">
+     <div class="contact-row">
+      <img alt="Discord" class="contact-icon" src="images/2111370.png"/>
+      <span class="contact-text">
+       gogogadgetgooner
+      </span>
+     </div>
+     <div class="contact-row">
+      <img alt="Gmail" class="contact-icon" src="images/281769.png"/>
+      <span class="contact-text">
+       skibtoi553@gmail.com
+      </span>
+     </div>
+     <div class="contact-row">
+      <img alt="New Picture" class="contact-icon" src="https://previews.dropbox.com/p/thumb/AC1I6QY8WrSLo9nH6gp0_6-23No8SBlrd_0vll-k6OxBQLu-sR1osVKWmY2pgBNQqi4LMDHPRKWETJ7rwaWQkU2TqP-wxUw9kOApEQPpLZrmc2KDqnq2M6r5rxi2dg67TbCA2b154vKsaSUa3naHb3OA4Z7G122SIUVBUKXnleGCgj3UXUc1ZvI2DnvJ7nW7pMI8pIrTwdl0ZsAvQYsDS-9XE-8Cd2rNJC35Y3fH9iAH17Qzwz6pItLt1s_2YXQexyyhxPgF3uzaSu8WpUAlchpP9FpRWEif_D4f2yDUYUuNUHivQWQdfpYVvbP8yj02DQ4z-nllFHxhexpKBqVrEyq-tleg3kLaiOB1kjP53vHViQ/p.png" style="border-radius: 4px;"/>
+      <span class="contact-text">
+       InfractionCollector
+      </span>
+     </div>
+    </div>
+   </div>
+   <div class="staff-card">
+    <div alt="Staff Member 2" class="staff-picture" style="background-image: url('data:image/jpeg;base64,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');">
+    </div>
+    <div class="staff-name">
+     Ale.xlol
+    </div>
+    <div aria-label="alex info" class="staff-info">
+     I like making stuff and even made Red, I also like to add to this website and help others and uuhhh I love jjk and I'm almost always available
+    </div>
+    <div class="contact-info">
+     <div class="contact-row">
+      <img alt="Discord" class="contact-icon" src="images/2111370.png"/>
+      <span class="contact-text">
+       alexbacklol173
+      </span>
+     </div>
+     <div class="contact-row">
+      <img alt="Gmail" class="contact-icon" src="images/281769.png"/>
+      <span class="contact-text">
+       alekare73@gmail.com
+      </span>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+   (function createStarfield() {
+const starfield = document.getElementById('starfield');
+const numberOfStars = 150;
+
+for (let i = 0; i < numberOfStars; i++) {
+const star = document.createElement('div');
+star.className = 'star';
+star.style.left = Math.random() * 100 + '%';
+star.style.top = Math.random() * 100 + '%';
+const size = Math.random() * 3 + 1;
+star.style.width = size + 'px';
+star.style.height = size + 'px';
+star.style.animationDelay = (Math.random() * 3) + 's';
+starfield.appendChild(star);
+}
+})();
+
+function addParticleEffect() {
+    const elements = document.querySelectorAll('.staff-card');
+    const PARTICLE_COUNT = 20;
+
+    elements.forEach(element => {
+        element.addEventListener('mouseenter', () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                createParticle(element);
+            }
+        });
+    });
+
+    function createParticle(el) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        document.body.appendChild(particle);
+
+        const elRect = el.getBoundingClientRect();
+        const size = Math.floor(Math.random() * 4 + 2);
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+
+        const side = Math.floor(Math.random() * 4);
+        let startX, startY;
+        let relativeStartX, relativeStartY;
+
+        switch (side) {
+            case 0: // top
+                relativeStartX = Math.random() * elRect.width;
+                relativeStartY = 0;
+                break;
+            case 1: // right
+                relativeStartX = elRect.width;
+                relativeStartY = Math.random() * elRect.height;
+                break;
+            case 2: // bottom
+                relativeStartX = Math.random() * elRect.width;
+                relativeStartY = elRect.height;
+                break;
+            case 3: // left
+                relativeStartX = 0;
+                relativeStartY = Math.random() * elRect.height;
+                break;
+        }
+
+        startX = elRect.left + relativeStartX;
+        startY = elRect.top + relativeStartY;
+        
+        let endX, endY;
+        const travelDistance = Math.random() * 80 + 40;
+        switch (side) {
+            case 0: // moves up
+                endX = (Math.random() - 0.5) * 100;
+                endY = -travelDistance;
+                break;
+            case 1: // moves right
+                endX = travelDistance;
+                endY = (Math.random() - 0.5) * 100;
+                break;
+            case 2: // moves down
+                endX = (Math.random() - 0.5) * 100;
+                endY = travelDistance;
+                break;
+            case 3: // moves left
+                endX = -travelDistance;
+                endY = (Math.random() - 0.5) * 100;
+                break;
+        }
+        
+        particle.style.left = `${startX - size / 2}px`;
+        particle.style.top = `${startY - size / 2}px`;
+
+        particle.style.setProperty('--transform-end', `translate(${endX}px, ${endY}px)`);
+        particle.style.animationDuration = `${Math.random() * 0.6 + 0.4}s`;
+
+        particle.addEventListener('animationend', () => {
+            particle.remove();
+        });
+    }
+}
+
+window.addEventListener('load', addParticleEffect);
+  </script>
+ </body>
+</html>

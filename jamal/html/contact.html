@@ -1,0 +1,869 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Jamal's Game Hub
+  </title>
+  <link href="https://iili.io/fHrIxvj.png" rel="icon" type="image/png"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="css/css2" rel="stylesheet"/>
+  <link href="css/all.min.css" rel="stylesheet"/>
+  <style>
+   *, ::before, ::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  :root {
+    --background: hsl(260, 40%, 8%);
+    --foreground: hsl(300, 20%, 95%);
+    --muted-foreground: hsl(300, 10%, 60%);
+    --accent: hsl(315, 80%, 70%);
+    --primary: hsl(330, 100%, 60%);
+    --success: hsl(145, 80%, 70%);
+    --error: hsl(0, 100%, 70%);
+    --font-mono: 'Orbitron', 'Menlo', monospace;
+    --font-sans: 'Rajdhani', 'Open Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    padding: 0rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .starfield {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -2;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute; background: white; border-radius: 50%;
+    animation: twinkle 3s infinite;
+  }
+  
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .neon-title {
+    font-family: var(--font-mono); font-weight: 900; text-transform: uppercase;
+    letter-spacing: 0.2em; color: #fff; font-size: clamp(2.5rem, 12vw, 5rem);
+    text-align: center; 
+    margin: 125px auto 2rem; 
+    max-width: 48rem;
+    text-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080, 0 0 30px #ff0080,
+                 0 0 40px #ff0080, 0 0 70px #ff0080, 0 0 80px #ff0080;
+    animation: neonFlicker 2s infinite alternate;
+  }
+
+  @keyframes neonFlicker {
+    0%, 100% { text-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080, 0 0 30px #ff0080, 0 0 40px #ff0080, 0 0 70px #ff0080, 0 0 80px #ff0080; }
+    50% { text-shadow: 0 0 5px #ff3366, 0 0 15px #ff3366, 0 0 25px #ff3366, 0 0 35px #ff3366, 0 0 60px #ff3366, 0 0 70px #ff3366; }
+  }
+  
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .wrapper {
+    max-width: 48rem;
+    width: 100%;
+  }
+
+  .container {
+    border-radius: 16px;
+    padding: 2px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    background: rgba(255, 0, 128, 0.3); 
+  }
+
+  .container::before,
+  .container::after {
+    content: '';
+    position: absolute;
+    z-index: -2;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      transparent 0% 85%,
+      var(--accent) 98%,
+      var(--primary) 100%
+    );
+    animation: rotate 4s linear infinite;
+  }
+  
+  .container::after {
+    animation-delay: -2s;
+  }
+
+  .container.form-submitted::before,
+  .container.form-submitted::after {
+    display: none;
+  }
+
+  .form-container-inner {
+      width: 100%;
+      border-radius: 15px; 
+      padding: 3rem 2rem; 
+      background-color: var(--background);
+      background-image: linear-gradient(rgba(255 0 128 / 0.05), rgba(255 0 128 / 0.05));
+      border: 2px solid rgba(255, 0, 128, 0.3);
+      box-shadow: 0 0 20px rgba(255, 0, 128, 0.4), inset 0 0 10px rgba(255, 0, 128, 0.2);
+      position: relative;
+      z-index: 1; 
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-container-inner:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 25px rgba(255, 0, 128, 0.6), inset 0 0 12px rgba(255, 0, 128, 0.4);
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+  }
+
+  input[type="text"],
+  textarea {
+    width: 100%;
+    background: rgba(255 0 128 / 0.1);
+    border: 2px solid rgba(255 0 128 / 0.3);
+    border-radius: 8px;
+    color: var(--foreground);
+    font-family: var(--font-mono); 
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    resize: none;
+    box-shadow: inset 0 0 10px rgba(255, 0, 128, 0.2);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  input[type="text"]:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: inset 0 0 10px rgba(255, 0, 128, 0.2), 0 0 10px var(--accent);
+  }
+
+  .form-footer {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  #submit-btn {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 0.75rem 2.5rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px transparent;
+  }
+
+  #submit-btn:hover:not(:disabled) {
+    background: var(--primary);
+    color: var(--background);
+    box-shadow: 0 0 20px var(--primary);
+    transform: translateY(-3px);
+  }
+
+  #submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--muted-foreground);
+    color: var(--muted-foreground);
+  }
+  
+  #form-status {
+    margin-top: 1.5rem;
+    min-height: 1.2em;
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+  
+  #thank-you-message {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  #thank-you-message h2 {
+    font-family: var(--font-mono);
+    font-size: 1.8rem;
+    color: var(--success);
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px var(--success);
+  }
+  
+  #thank-you-message p {
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    color: var(--muted-foreground);
+  }
+  </style>
+ </head>
+ <body>
+  <!-- =================== START OF MENU BAR THINGY =================== -->
+  <style>
+   .main-nav {font-family: var(--font-sans);background-color: rgba(15, 12, 25, 0.85);backdrop-filter: blur(10px);border-bottom: 2px solid rgba(255, 0, 128, 0.3);box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);width: 100%;position: fixed;top: -80px; left: 0;z-index: 1000;transition: top 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);padding: 0.5rem 0;}
+    .main-nav.visible {top: 0; }
+    
+    .nav-content {display: flex;align-items: center;padding: 0 -0.5rem 0 1rem;max-width: 1200px;margin: 0 auto;}
+    
+    .nav-logo-title {display: flex;align-items: center;gap: 1rem;text-decoration: none;}
+    .nav-logo-title img { height: 40px;}
+    .nav-logo-title .site-title {font-family: var(--font-mono);font-size: 1.5rem;font-weight: 700;color: var(--foreground);text-shadow: 0 0 8px var(--primary);}
+    
+    .nav-links {list-style: none;margin: 0;padding: 0;display: flex;gap: 0.5rem;margin-left: auto; }
+    .nav-links li { position: relative; }
+    .nav-links a {display: flex; align-items: center; color: var(--muted-foreground);text-decoration: none;padding: 0.8rem 1rem;font-size: 1rem;font-weight: 600;border-radius: 8px;transition: all 0.3s ease;}
+    .nav-links a:hover,.nav-links a.active {color: var(--foreground);background-color: rgba(255, 0, 128, 0.1);text-shadow: 0 0 5px var(--primary);}
+    
+    .nav-links a i:not(.fa-caret-down) { margin-right: 8px; }
+    .nav-links a i.fa-caret-down { margin-left: 0.3rem; }
+    
+    .dropdown-content {display: none;position: absolute;top: 100%;left: 0;background-color: rgba(25, 22, 40, 0.95);border: 1px solid rgba(255, 0, 128, 0.3);border-radius: 0 0 8px 8px;min-width: 200px;box-shadow: 0 8px 16px rgba(0,0,0,0.3);z-index: 1;padding: 0.5rem 0;overflow: hidden;}
+    .dropdown:hover .dropdown-content { display: block; }
+    .dropdown-content a {width: 100%;text-align: left;border-radius: 0;padding: 0.8rem 1.5rem;box-sizing: border-box;}
+    
+    .nav-toggle-btn {position: fixed;top: 1rem;right: 2rem;z-index: 1001;background: rgba(15, 12, 25, 0.85);border: 2px solid var(--muted-foreground);color: var(--muted-foreground);border-radius: 8px;width: 40px;height: 40px;cursor: pointer;font-size: 1.2rem;transition: all 0.3s ease;}
+    .nav-toggle-btn:hover {border-color: var(--primary);color: var(--primary);box-shadow: 0 0 10px var(--primary);}
+    .nav-toggle-btn .arrow-up { display: none; }
+    .nav-toggle-btn.active .arrow-up { display: inline; }
+    .nav-toggle-btn.active .arrow-down { display: none; }
+  </style>
+  <nav class="main-nav visible" id="mainNav">
+   <div class="nav-content">
+    <a class="nav-logo-title" href="index.html">
+     <img alt="Site Logo" src="images/fHrIxvj.png"/>
+     <span class="site-title">
+      Jamal's Game Hub
+     </span>
+    </a>
+    <ul class="nav-links">
+     <li>
+      <a href="index.html">
+       <i class="fas fa-home">
+       </i>
+       Home
+      </a>
+     </li>
+     <li>
+      <a href="media.html">
+       <i class="fas fa-tv">
+       </i>
+       Media
+      </a>
+     </li>
+     <li>
+      <a href="vortex.html">
+       <i class="fas fa-comment-dots">
+       </i>
+       Vortex
+      </a>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-rocket">
+       </i>
+       Proxies
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="proxyinfo.html">
+        Proxies Info
+       </a>
+       <a href="proxies.html">
+        Proxies
+       </a>
+       <a href="proxydrop.html">
+        Proxy Link Drops
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-gamepad">
+       </i>
+       Game Sites
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="gamesites.html">
+        Game Sites
+       </a>
+       <a href="gamesiteslinkdrop.html">
+        Game Site Link Drops
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-tools">
+       </i>
+       Tools
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="durlgen.html">
+        Data URL Gen
+       </a>
+       <a href="abtblnk.html">
+        About:blank tab opener
+       </a>
+       <a href="viewer.html">
+        HTML viewer
+       </a>
+       <a href="translate.html">
+        Translator
+       </a>
+       <a href="unitconverter.html">
+        Unit Converter
+       </a>
+       <a href="stopwatch.html">
+        Stopwatch
+       </a>
+      </div>
+     </li>
+     <li class="dropdown">
+      <a href="javascript:void(0)">
+       <i class="fas fa-info-circle">
+       </i>
+       Important
+       <i class="fas fa-caret-down">
+       </i>
+      </a>
+      <div class="dropdown-content">
+       <a href="staff.html">
+        Staff
+       </a>
+       <a href="updatelog.html">
+        Update Log
+       </a>
+       <a href="partners.html">
+        Partners
+       </a>
+       <a href="credits.html">
+        Credits
+       </a>
+       <a href="contact.html">
+        Contact Form
+       </a>
+      </div>
+     </li>
+    </ul>
+   </div>
+  </nav>
+  <button class="nav-toggle-btn active" id="navToggle">
+   <i class="fas fa-chevron-down arrow-down">
+   </i>
+   <i class="fas fa-chevron-up arrow-up">
+   </i>
+  </button>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+        if (window.navMenuLoaded) return;
+        window.navMenuLoaded = true;
+
+        const mainNav = document.getElementById('mainNav');
+        const navToggle = document.getElementById('navToggle');
+        
+        function toggleMenu() {
+            mainNav.classList.toggle('visible');
+            navToggle.classList.toggle('active');
+        }
+
+        navToggle.addEventListener('click', toggleMenu);
+
+        setTimeout(() => {
+            mainNav.classList.add('visible');
+            navToggle.classList.add('active');
+        }, 100); 
+    });
+  </script>
+  <!-- ===========================END OF MENU BAR THINGY=======================-->
+  <div class="starfield" id="starfield">
+   <div class="star" style="left: 73.2092%; top: 94.9513%; width: 1.44955px; height: 1.44955px; animation-delay: 0.193294s;">
+   </div>
+   <div class="star" style="left: 36.2866%; top: 31.1693%; width: 1.23893px; height: 1.23893px; animation-delay: 2.1858s;">
+   </div>
+   <div class="star" style="left: 48.5296%; top: 99.8738%; width: 2.875px; height: 2.875px; animation-delay: 2.04475s;">
+   </div>
+   <div class="star" style="left: 31.7941%; top: 68.2462%; width: 2.18597px; height: 2.18597px; animation-delay: 2.53744s;">
+   </div>
+   <div class="star" style="left: 4.05298%; top: 20.9285%; width: 1.84275px; height: 1.84275px; animation-delay: 2.63466s;">
+   </div>
+   <div class="star" style="left: 35.6444%; top: 11.0979%; width: 2.29903px; height: 2.29903px; animation-delay: 2.55585s;">
+   </div>
+   <div class="star" style="left: 47.6578%; top: 0.40849%; width: 2.16469px; height: 2.16469px; animation-delay: 1.79162s;">
+   </div>
+   <div class="star" style="left: 83.0568%; top: 72.1315%; width: 1.35545px; height: 1.35545px; animation-delay: 0.570258s;">
+   </div>
+   <div class="star" style="left: 30.233%; top: 9.14119%; width: 2.61479px; height: 2.61479px; animation-delay: 1.49104s;">
+   </div>
+   <div class="star" style="left: 27.7028%; top: 95.6856%; width: 1.16873px; height: 1.16873px; animation-delay: 2.87154s;">
+   </div>
+   <div class="star" style="left: 35.9725%; top: 47.8913%; width: 3.71453px; height: 3.71453px; animation-delay: 2.31011s;">
+   </div>
+   <div class="star" style="left: 39.0112%; top: 37.9669%; width: 3.07961px; height: 3.07961px; animation-delay: 0.839878s;">
+   </div>
+   <div class="star" style="left: 32.2979%; top: 79.0034%; width: 1.89785px; height: 1.89785px; animation-delay: 1.97007s;">
+   </div>
+   <div class="star" style="left: 25.6344%; top: 12.9773%; width: 3.01229px; height: 3.01229px; animation-delay: 0.110842s;">
+   </div>
+   <div class="star" style="left: 27.8522%; top: 35.7013%; width: 1.11586px; height: 1.11586px; animation-delay: 2.0101s;">
+   </div>
+   <div class="star" style="left: 93.705%; top: 90.9477%; width: 3.6983px; height: 3.6983px; animation-delay: 0.139896s;">
+   </div>
+   <div class="star" style="left: 58.5992%; top: 17.2314%; width: 1.00766px; height: 1.00766px; animation-delay: 0.547049s;">
+   </div>
+   <div class="star" style="left: 94.3783%; top: 29.6034%; width: 3.07803px; height: 3.07803px; animation-delay: 0.309959s;">
+   </div>
+   <div class="star" style="left: 93.1563%; top: 53.4219%; width: 2.6206px; height: 2.6206px; animation-delay: 0.410003s;">
+   </div>
+   <div class="star" style="left: 24.4428%; top: 82.5945%; width: 1.98613px; height: 1.98613px; animation-delay: 0.338764s;">
+   </div>
+   <div class="star" style="left: 77.795%; top: 17.7106%; width: 1.82225px; height: 1.82225px; animation-delay: 1.46726s;">
+   </div>
+   <div class="star" style="left: 34.7703%; top: 31.5257%; width: 2.80007px; height: 2.80007px; animation-delay: 1.04385s;">
+   </div>
+   <div class="star" style="left: 11.1775%; top: 25.5716%; width: 3.68616px; height: 3.68616px; animation-delay: 1.37881s;">
+   </div>
+   <div class="star" style="left: 10.277%; top: 86.5116%; width: 2.62888px; height: 2.62888px; animation-delay: 1.75554s;">
+   </div>
+   <div class="star" style="left: 64.4486%; top: 32.1521%; width: 2.02677px; height: 2.02677px; animation-delay: 2.74379s;">
+   </div>
+   <div class="star" style="left: 88.8997%; top: 61.1018%; width: 2.66608px; height: 2.66608px; animation-delay: 2.66119s;">
+   </div>
+   <div class="star" style="left: 62.2874%; top: 30.3789%; width: 1.78458px; height: 1.78458px; animation-delay: 2.08383s;">
+   </div>
+   <div class="star" style="left: 12.1116%; top: 32.9389%; width: 1.53852px; height: 1.53852px; animation-delay: 2.96424s;">
+   </div>
+   <div class="star" style="left: 9.21784%; top: 57.4151%; width: 1.35342px; height: 1.35342px; animation-delay: 0.611967s;">
+   </div>
+   <div class="star" style="left: 9.00923%; top: 46.3817%; width: 1.7287px; height: 1.7287px; animation-delay: 0.260199s;">
+   </div>
+   <div class="star" style="left: 45.0138%; top: 83.3957%; width: 2.6428px; height: 2.6428px; animation-delay: 0.555773s;">
+   </div>
+   <div class="star" style="left: 14.1186%; top: 59.0382%; width: 1.34832px; height: 1.34832px; animation-delay: 0.545217s;">
+   </div>
+   <div class="star" style="left: 0.280076%; top: 70.3834%; width: 1.13401px; height: 1.13401px; animation-delay: 2.16769s;">
+   </div>
+   <div class="star" style="left: 9.41317%; top: 54.6968%; width: 2.37944px; height: 2.37944px; animation-delay: 0.346719s;">
+   </div>
+   <div class="star" style="left: 91.6916%; top: 87.0562%; width: 1.40497px; height: 1.40497px; animation-delay: 1.0625s;">
+   </div>
+   <div class="star" style="left: 48.6709%; top: 81.0493%; width: 2.77414px; height: 2.77414px; animation-delay: 0.414307s;">
+   </div>
+   <div class="star" style="left: 54.5102%; top: 83.4388%; width: 3.0731px; height: 3.0731px; animation-delay: 1.81193s;">
+   </div>
+   <div class="star" style="left: 6.49251%; top: 38.3894%; width: 1.2782px; height: 1.2782px; animation-delay: 0.449924s;">
+   </div>
+   <div class="star" style="left: 13.7951%; top: 64.0303%; width: 1.91703px; height: 1.91703px; animation-delay: 2.43243s;">
+   </div>
+   <div class="star" style="left: 35.2716%; top: 17.9224%; width: 1.17107px; height: 1.17107px; animation-delay: 0.797957s;">
+   </div>
+   <div class="star" style="left: 13.1918%; top: 85.8623%; width: 2.28251px; height: 2.28251px; animation-delay: 0.443001s;">
+   </div>
+   <div class="star" style="left: 43.0865%; top: 85.9932%; width: 2.71614px; height: 2.71614px; animation-delay: 1.17632s;">
+   </div>
+   <div class="star" style="left: 23.5821%; top: 59.7899%; width: 1.94801px; height: 1.94801px; animation-delay: 1.17425s;">
+   </div>
+   <div class="star" style="left: 80.0681%; top: 5.93643%; width: 3.63885px; height: 3.63885px; animation-delay: 0.43173s;">
+   </div>
+   <div class="star" style="left: 13.3361%; top: 44.2048%; width: 3.29573px; height: 3.29573px; animation-delay: 2.2998s;">
+   </div>
+   <div class="star" style="left: 37.3825%; top: 32.271%; width: 3.43422px; height: 3.43422px; animation-delay: 2.3598s;">
+   </div>
+   <div class="star" style="left: 73.4524%; top: 49.5268%; width: 3.00462px; height: 3.00462px; animation-delay: 0.568625s;">
+   </div>
+   <div class="star" style="left: 55.1675%; top: 91.6275%; width: 1.48674px; height: 1.48674px; animation-delay: 1.05542s;">
+   </div>
+   <div class="star" style="left: 80.3282%; top: 63.9852%; width: 2.11523px; height: 2.11523px; animation-delay: 0.162745s;">
+   </div>
+   <div class="star" style="left: 23.6648%; top: 42.1678%; width: 3.38552px; height: 3.38552px; animation-delay: 0.12799s;">
+   </div>
+   <div class="star" style="left: 45.4528%; top: 43.5471%; width: 3.69533px; height: 3.69533px; animation-delay: 2.07275s;">
+   </div>
+   <div class="star" style="left: 62.9997%; top: 34.9503%; width: 3.54765px; height: 3.54765px; animation-delay: 0.160644s;">
+   </div>
+   <div class="star" style="left: 12.3306%; top: 31.6686%; width: 3.69122px; height: 3.69122px; animation-delay: 0.743423s;">
+   </div>
+   <div class="star" style="left: 17.131%; top: 3.13429%; width: 2.76381px; height: 2.76381px; animation-delay: 1.24097s;">
+   </div>
+   <div class="star" style="left: 33.4769%; top: 97.9706%; width: 1.6273px; height: 1.6273px; animation-delay: 2.0276s;">
+   </div>
+   <div class="star" style="left: 15.592%; top: 54.1327%; width: 1.69456px; height: 1.69456px; animation-delay: 1.56787s;">
+   </div>
+   <div class="star" style="left: 84.9559%; top: 75.5204%; width: 1.66612px; height: 1.66612px; animation-delay: 2.18273s;">
+   </div>
+   <div class="star" style="left: 80.8603%; top: 61.773%; width: 2.10165px; height: 2.10165px; animation-delay: 0.299231s;">
+   </div>
+   <div class="star" style="left: 59.4582%; top: 82.1761%; width: 1.14697px; height: 1.14697px; animation-delay: 0.967022s;">
+   </div>
+   <div class="star" style="left: 8.23974%; top: 89.0382%; width: 2.4551px; height: 2.4551px; animation-delay: 0.0275562s;">
+   </div>
+   <div class="star" style="left: 0.76676%; top: 75.9698%; width: 3.46285px; height: 3.46285px; animation-delay: 2.91741s;">
+   </div>
+   <div class="star" style="left: 38.8354%; top: 76.0965%; width: 3.45347px; height: 3.45347px; animation-delay: 0.905063s;">
+   </div>
+   <div class="star" style="left: 94.5321%; top: 45.134%; width: 1.36347px; height: 1.36347px; animation-delay: 0.617694s;">
+   </div>
+   <div class="star" style="left: 64.7279%; top: 21.2542%; width: 1.0523px; height: 1.0523px; animation-delay: 1.40524s;">
+   </div>
+   <div class="star" style="left: 67.5462%; top: 16.7722%; width: 1.01502px; height: 1.01502px; animation-delay: 2.5065s;">
+   </div>
+   <div class="star" style="left: 22.7257%; top: 22.7407%; width: 2.37901px; height: 2.37901px; animation-delay: 2.42503s;">
+   </div>
+   <div class="star" style="left: 10.2041%; top: 10.5948%; width: 1.91502px; height: 1.91502px; animation-delay: 2.84641s;">
+   </div>
+   <div class="star" style="left: 0.221333%; top: 1.73926%; width: 2.79916px; height: 2.79916px; animation-delay: 2.36972s;">
+   </div>
+   <div class="star" style="left: 52.9841%; top: 86.2717%; width: 2.08315px; height: 2.08315px; animation-delay: 0.522329s;">
+   </div>
+   <div class="star" style="left: 24.2533%; top: 7.15401%; width: 3.57333px; height: 3.57333px; animation-delay: 2.38496s;">
+   </div>
+   <div class="star" style="left: 64.0474%; top: 57.2989%; width: 1.63361px; height: 1.63361px; animation-delay: 0.490954s;">
+   </div>
+   <div class="star" style="left: 0.825323%; top: 95.044%; width: 2.40641px; height: 2.40641px; animation-delay: 0.894769s;">
+   </div>
+   <div class="star" style="left: 24.0327%; top: 90.6585%; width: 1.53521px; height: 1.53521px; animation-delay: 2.87086s;">
+   </div>
+   <div class="star" style="left: 86.3436%; top: 52.6412%; width: 2.10001px; height: 2.10001px; animation-delay: 1.53433s;">
+   </div>
+   <div class="star" style="left: 57.2186%; top: 15.3382%; width: 1.5252px; height: 1.5252px; animation-delay: 2.82233s;">
+   </div>
+   <div class="star" style="left: 81.3968%; top: 15.3254%; width: 1.06349px; height: 1.06349px; animation-delay: 2.23162s;">
+   </div>
+   <div class="star" style="left: 52.2481%; top: 48.7215%; width: 2.5398px; height: 2.5398px; animation-delay: 0.541793s;">
+   </div>
+   <div class="star" style="left: 18.9746%; top: 64.5985%; width: 1.70162px; height: 1.70162px; animation-delay: 0.882494s;">
+   </div>
+   <div class="star" style="left: 93.0572%; top: 27.2771%; width: 3.38554px; height: 3.38554px; animation-delay: 0.874468s;">
+   </div>
+   <div class="star" style="left: 44.7016%; top: 64.3348%; width: 2.43045px; height: 2.43045px; animation-delay: 1.46007s;">
+   </div>
+   <div class="star" style="left: 44.4773%; top: 72.3472%; width: 2.33717px; height: 2.33717px; animation-delay: 2.49754s;">
+   </div>
+   <div class="star" style="left: 66.3721%; top: 43.7639%; width: 2.8751px; height: 2.8751px; animation-delay: 0.274079s;">
+   </div>
+   <div class="star" style="left: 78.5397%; top: 69.9119%; width: 3.66169px; height: 3.66169px; animation-delay: 1.51427s;">
+   </div>
+   <div class="star" style="left: 50.985%; top: 53.3658%; width: 1.9615px; height: 1.9615px; animation-delay: 2.4349s;">
+   </div>
+   <div class="star" style="left: 53.5677%; top: 0.0263127%; width: 1.2251px; height: 1.2251px; animation-delay: 1.86679s;">
+   </div>
+   <div class="star" style="left: 0.343091%; top: 7.1175%; width: 2.32384px; height: 2.32384px; animation-delay: 0.606959s;">
+   </div>
+   <div class="star" style="left: 61.9211%; top: 97.839%; width: 1.35464px; height: 1.35464px; animation-delay: 1.40815s;">
+   </div>
+   <div class="star" style="left: 91.1813%; top: 39.8394%; width: 2.23877px; height: 2.23877px; animation-delay: 2.03942s;">
+   </div>
+   <div class="star" style="left: 82.6687%; top: 58.1191%; width: 2.51719px; height: 2.51719px; animation-delay: 0.895623s;">
+   </div>
+   <div class="star" style="left: 87.4961%; top: 49.1758%; width: 2.0241px; height: 2.0241px; animation-delay: 1.52268s;">
+   </div>
+   <div class="star" style="left: 98.2135%; top: 29.9792%; width: 2.66686px; height: 2.66686px; animation-delay: 1.62997s;">
+   </div>
+   <div class="star" style="left: 92.6684%; top: 82.8489%; width: 3.32664px; height: 3.32664px; animation-delay: 2.27921s;">
+   </div>
+   <div class="star" style="left: 63.9444%; top: 46.0177%; width: 1.90617px; height: 1.90617px; animation-delay: 2.65085s;">
+   </div>
+   <div class="star" style="left: 23.7028%; top: 76.1143%; width: 2.11176px; height: 2.11176px; animation-delay: 0.827548s;">
+   </div>
+   <div class="star" style="left: 8.09974%; top: 94.3293%; width: 2.11815px; height: 2.11815px; animation-delay: 0.621415s;">
+   </div>
+   <div class="star" style="left: 50.9743%; top: 0.493881%; width: 3.03009px; height: 3.03009px; animation-delay: 0.648419s;">
+   </div>
+   <div class="star" style="left: 43.0317%; top: 59.7074%; width: 1.41368px; height: 1.41368px; animation-delay: 2.39866s;">
+   </div>
+   <div class="star" style="left: 65.2455%; top: 88.6347%; width: 2.13197px; height: 2.13197px; animation-delay: 1.89104s;">
+   </div>
+   <div class="star" style="left: 12.6914%; top: 12.2186%; width: 2.30024px; height: 2.30024px; animation-delay: 2.66512s;">
+   </div>
+   <div class="star" style="left: 77.6984%; top: 24.7262%; width: 3.8172px; height: 3.8172px; animation-delay: 0.00773971s;">
+   </div>
+   <div class="star" style="left: 42.1718%; top: 53.2807%; width: 1.54888px; height: 1.54888px; animation-delay: 1.87348s;">
+   </div>
+   <div class="star" style="left: 8.94154%; top: 94.7221%; width: 3.87369px; height: 3.87369px; animation-delay: 2.89283s;">
+   </div>
+   <div class="star" style="left: 65.1256%; top: 65.6645%; width: 2.30147px; height: 2.30147px; animation-delay: 2.58076s;">
+   </div>
+   <div class="star" style="left: 97.4816%; top: 54.4619%; width: 1.32604px; height: 1.32604px; animation-delay: 2.56154s;">
+   </div>
+   <div class="star" style="left: 79.7728%; top: 58.9645%; width: 1.30761px; height: 1.30761px; animation-delay: 0.772312s;">
+   </div>
+   <div class="star" style="left: 94.0615%; top: 79.5913%; width: 1.02797px; height: 1.02797px; animation-delay: 1.36258s;">
+   </div>
+   <div class="star" style="left: 45.8998%; top: 1.84259%; width: 1.31378px; height: 1.31378px; animation-delay: 0.0269877s;">
+   </div>
+   <div class="star" style="left: 19.5236%; top: 69.9962%; width: 3.17961px; height: 3.17961px; animation-delay: 2.89184s;">
+   </div>
+   <div class="star" style="left: 37.3001%; top: 33.7745%; width: 3.17966px; height: 3.17966px; animation-delay: 2.13708s;">
+   </div>
+   <div class="star" style="left: 73.476%; top: 54.6304%; width: 1.20093px; height: 1.20093px; animation-delay: 1.71896s;">
+   </div>
+   <div class="star" style="left: 50.6427%; top: 84.0644%; width: 3.9604px; height: 3.9604px; animation-delay: 2.74246s;">
+   </div>
+   <div class="star" style="left: 61.9823%; top: 57.7103%; width: 3.73519px; height: 3.73519px; animation-delay: 2.49185s;">
+   </div>
+   <div class="star" style="left: 2.68444%; top: 81.1074%; width: 3.33539px; height: 3.33539px; animation-delay: 2.49186s;">
+   </div>
+   <div class="star" style="left: 80.2669%; top: 8.18478%; width: 2.64208px; height: 2.64208px; animation-delay: 1.68073s;">
+   </div>
+   <div class="star" style="left: 30.0374%; top: 67.978%; width: 2.07517px; height: 2.07517px; animation-delay: 0.908313s;">
+   </div>
+   <div class="star" style="left: 7.26136%; top: 71.2201%; width: 3.80557px; height: 3.80557px; animation-delay: 0.611884s;">
+   </div>
+   <div class="star" style="left: 8.99993%; top: 82.0045%; width: 1.89668px; height: 1.89668px; animation-delay: 2.29255s;">
+   </div>
+   <div class="star" style="left: 80.9266%; top: 62.6735%; width: 1.72885px; height: 1.72885px; animation-delay: 1.096s;">
+   </div>
+   <div class="star" style="left: 66.9507%; top: 50.5679%; width: 2.39373px; height: 2.39373px; animation-delay: 0.27681s;">
+   </div>
+   <div class="star" style="left: 36.3102%; top: 29.2252%; width: 1.96697px; height: 1.96697px; animation-delay: 2.32728s;">
+   </div>
+   <div class="star" style="left: 77.142%; top: 3.17488%; width: 1.47022px; height: 1.47022px; animation-delay: 0.733167s;">
+   </div>
+   <div class="star" style="left: 82.2294%; top: 94.9853%; width: 3.60153px; height: 3.60153px; animation-delay: 0.146895s;">
+   </div>
+   <div class="star" style="left: 44.5266%; top: 67.432%; width: 1.11128px; height: 1.11128px; animation-delay: 2.77403s;">
+   </div>
+   <div class="star" style="left: 47.6562%; top: 26.4297%; width: 1.738px; height: 1.738px; animation-delay: 0.0912679s;">
+   </div>
+   <div class="star" style="left: 98.5452%; top: 65.0701%; width: 1.37666px; height: 1.37666px; animation-delay: 2.6581s;">
+   </div>
+   <div class="star" style="left: 99.3176%; top: 29.3977%; width: 2.51472px; height: 2.51472px; animation-delay: 0.907969s;">
+   </div>
+   <div class="star" style="left: 36.9988%; top: 12.8025%; width: 1.8221px; height: 1.8221px; animation-delay: 0.221931s;">
+   </div>
+   <div class="star" style="left: 47.1341%; top: 71.0826%; width: 3.32854px; height: 3.32854px; animation-delay: 0.72857s;">
+   </div>
+   <div class="star" style="left: 99.6468%; top: 31.0101%; width: 1.41091px; height: 1.41091px; animation-delay: 0.51022s;">
+   </div>
+   <div class="star" style="left: 35.916%; top: 51.169%; width: 1.65296px; height: 1.65296px; animation-delay: 1.80195s;">
+   </div>
+   <div class="star" style="left: 84.9604%; top: 67.4914%; width: 3.63851px; height: 3.63851px; animation-delay: 0.0840981s;">
+   </div>
+   <div class="star" style="left: 97.718%; top: 34.7319%; width: 2.32601px; height: 2.32601px; animation-delay: 1.89928s;">
+   </div>
+   <div class="star" style="left: 11.5864%; top: 18.5553%; width: 1.09286px; height: 1.09286px; animation-delay: 1.52625s;">
+   </div>
+   <div class="star" style="left: 7.97837%; top: 33.9258%; width: 2.12755px; height: 2.12755px; animation-delay: 2.17115s;">
+   </div>
+   <div class="star" style="left: 63.8773%; top: 35.1998%; width: 3.86953px; height: 3.86953px; animation-delay: 1.76161s;">
+   </div>
+   <div class="star" style="left: 71.5197%; top: 73.9288%; width: 3.87689px; height: 3.87689px; animation-delay: 0.223898s;">
+   </div>
+   <div class="star" style="left: 91.9774%; top: 96.6964%; width: 2.05431px; height: 2.05431px; animation-delay: 2.27997s;">
+   </div>
+   <div class="star" style="left: 32.8021%; top: 84.3367%; width: 2.29353px; height: 2.29353px; animation-delay: 1.087s;">
+   </div>
+   <div class="star" style="left: 37.3569%; top: 50.7545%; width: 3.86183px; height: 3.86183px; animation-delay: 2.43359s;">
+   </div>
+   <div class="star" style="left: 43.8398%; top: 77.366%; width: 2.95698px; height: 2.95698px; animation-delay: 0.215965s;">
+   </div>
+   <div class="star" style="left: 3.48662%; top: 51.8239%; width: 3.56334px; height: 3.56334px; animation-delay: 2.25918s;">
+   </div>
+   <div class="star" style="left: 50.2341%; top: 59.189%; width: 3.81437px; height: 3.81437px; animation-delay: 2.25244s;">
+   </div>
+   <div class="star" style="left: 82.8641%; top: 67.4311%; width: 2.82572px; height: 2.82572px; animation-delay: 1.82713s;">
+   </div>
+   <div class="star" style="left: 5.01094%; top: 98.6032%; width: 1.53214px; height: 1.53214px; animation-delay: 0.738878s;">
+   </div>
+   <div class="star" style="left: 65.1083%; top: 15.9258%; width: 1.45197px; height: 1.45197px; animation-delay: 2.56535s;">
+   </div>
+   <div class="star" style="left: 78.9541%; top: 38.3033%; width: 1.95516px; height: 1.95516px; animation-delay: 1.55041s;">
+   </div>
+   <div class="star" style="left: 71.7967%; top: 18.9411%; width: 2.16497px; height: 2.16497px; animation-delay: 1.8302s;">
+   </div>
+   <div class="star" style="left: 10.9202%; top: 93.6311%; width: 1.42409px; height: 1.42409px; animation-delay: 2.39511s;">
+   </div>
+   <div class="star" style="left: 38.182%; top: 85.5152%; width: 2.24984px; height: 2.24984px; animation-delay: 2.87704s;">
+   </div>
+   <div class="star" style="left: 24.3944%; top: 98.8909%; width: 1.3357px; height: 1.3357px; animation-delay: 1.79863s;">
+   </div>
+  </div>
+  <h1 class="neon-title">
+   Contact Form
+  </h1>
+  <div class="wrapper">
+   <div class="container">
+    <div class="form-container-inner">
+     <form action="https://formspree.io/f/movyjywg" id="contact-form" method="POST">
+      <div class="form-group">
+       <label for="name">
+        Your Name
+       </label>
+       <input id="name" maxlength="20" name="name" placeholder="Enter your name here" required="" type="text"/>
+      </div>
+      <div class="form-group">
+       <label for="request">
+        What are you requesting/What do you need?
+       </label>
+       <textarea id="request" maxlength="250" name="request" placeholder="example: a partner request, a game request, a proxy request, something is broken, etc." required="" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+       <label for="contact-method">
+        How can I contact you if needbe?
+       </label>
+       <input id="contact-method" maxlength="40" name="contact_method" placeholder="example: email, discord. NO PHONE NUMBERS OR SCHOOL EMAILS." required="" type="text"/>
+      </div>
+      <div class="form-group">
+       <label for="additional-notes">
+        Is there anything else I should know?
+       </label>
+       <textarea id="additional-notes" maxlength="250" name="additional_notes" placeholder="Any extra details, requests, etc." required="" rows="4"></textarea>
+      </div>
+      <div class="form-footer">
+       <button id="submit-btn" type="submit">
+        Submit Form
+       </button>
+       <p id="form-status">
+       </p>
+      </div>
+     </form>
+     <div id="thank-you-message">
+      <h2>
+       Thank you for submitting!
+      </h2>
+      <p>
+       If I think your request is reasonable/important then I will contact you when I see your response.
+      </p>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+   document.addEventListener('DOMContentLoaded', () => {
+    const numberOfStars = 150;
+    
+    const starfield = document.getElementById('starfield');
+    for (let i = 0; i < numberOfStars; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      const size = Math.random() * 3 + 1;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.animationDelay = `${Math.random() * 3}s`;
+      starfield.appendChild(star);
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const blacklist = ["nigger", "nigga", "faggot", "fag", "niga", "niger", "cunt", "niggger", "coon", "slave", "kike", "dyke", "jew", "nazi", "retard", "fagggot", "faggg", "n1gger", "n1ggger", "n1gga", "n1ggga", "n!gga", "n!gger",];
+    
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const formStatus = document.getElementById('form-status');
+    const thankYouMessage = document.getElementById('thank-you-message');
+
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault(); 
+
+        const formData = new FormData(form);
+        let combinedText = '';
+        for (let value of formData.values()) {
+          combinedText += value.toString().toLowerCase() + ' ';
+        }
+
+        for (const word of blacklist) {
+          if (combinedText.includes(word)) {
+            formStatus.textContent = "Blocked word detected.";
+            formStatus.style.color = 'var(--error)';
+            return;
+          }
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        formStatus.textContent = '';
+        formStatus.style.color = 'var(--foreground)';
+
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'Accept': 'application/json'
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            form.style.display = 'none';
+            thankYouMessage.style.display = 'block';
+            form.closest('.container').classList.add('form-submitted');
+          } else {
+            response.json().then(data => {
+              if (Object.hasOwn(data, 'errors')) {
+                formStatus.textContent = data["errors"].map(error => error["message"]).join(", ");
+              } else {
+                formStatus.textContent = 'Error: Submission failed. Please try again.';
+              }
+              formStatus.style.color = 'var(--error)';
+            })
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          formStatus.textContent = 'An unexpected network error occurred.';
+          formStatus.style.color = 'var(--error)';
+        })
+        .finally(() => {
+          if (thankYouMessage.style.display !== 'block') {
+             submitBtn.disabled = false;
+             submitBtn.textContent = 'Submit Message';
+          }
+        });
+      });
+    }
+  });
+  </script>
+ </body>
+</html>
